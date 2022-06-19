@@ -1,0 +1,95 @@
+
+***********COMMENTS************************
+
+
+Unable to run python using files from the share drive. I attempted to use 
+local paths (within the folder) in order to make this easier to follow. Unfortunately,
+that is not something I can do for sys.path. 
+
+In order to use the scripts in the code folder, you'll need to install the correct modules and 
+adjust the sys.paths. 
+
+XGboost was a little difficult to install. I've included it in the programs folder. Adjust the sys.path
+to this folder and it may work. If not, you'll need to reinstall it.
+
+Quickpipeline was used to preprocess a lot of the data. You can view its code in the code folder. This was pulled from
+github. The cleaner is pretty thorough but does trip up on things - such as timestamps
+
+graphviz is hit or miss if you use the plot_tree function. However, if you use the .export_graphviz method, it tends to 
+work better. 
+
+Competitor.premium is unused until the very end (NID folder). 
+
+
+*********************************************************************************************
+
+
+To follow the code:
+
+1.JOIN:
+
+The data (data/raw) was pulled from the SAS server and the share drive. An INNER JOIN was 
+performed with pandas. Data was exported to data/processed1
+
+2. Initial_scrub_R:
+
+Basic cleaning with some feature engineering in R. Data split into 3 dataframes by data
+type and exported to data/processed2
+
+3. EDA: Data cleaned/engineered by data type
+
+	-> CATS: Several additional features were created using the csf data (see word doc). My threashold for 
+	features selection was >= .5*mean (importance weights). However, I tended to round up.
+
+	-> NUM: An isolation forest was used on the numerical data for identifying outliers given n-dimensions.
+	
+		https://quantdare.com/isolation-forest-algorithm/
+
+	Outliers (by percentage) were identified, contatenated, and exported. This is because the outliers cannot
+	be removed until the separate dataframes are rejoined. 
+
+	-> text: Cats that had too many values or that were long descriptions (i.e. programs), were converted 
+	to frequency counts, revised nominal cats, and word vectors. The word vectors were then reduced to 1-dim and tested as a possible features.
+	My original intent was to feed word embeddings into as RNN that could be used as a weak leaner in a larger ensemble
+	model (modifying adaboost code). Unfortunately, I was unable to come up with anything functional in time. 
+
+
+4.feat_grid: 
+
+	-> Grid: I used Yang's previous hyperparameters with a grid search to arrive at the hyperparameters - pretty much the 
+	same as what Yang had. It outperformed the base model.
+	-> Final_feat: I then brought in all the separate datatypes, concatenated them, and dropped the outliers. A final
+	feature importance was run and 60 features were selected. The .5*mean threashold only suggested around 44. But I saw
+	a noticeable increase in log-loss during the model comparisions and thought to increase the threashold 
+
+
+5. Models: Suggest using spyder. The adaboost code is a bit buggy. You may try Sklearns version instead. XGboost performed
+	the best when comparing log-loss. The ppt shows shows screen shots of accuracy/log loss.
+
+
+6. LIME: (Locally interpretable model-agnostic explanations). The link to github is in the jupyter notebook and a publication
+is included. This approximates a logistic regression (with coefficients) for each sample. This will run as is. As long 
+as you have the right packages installed (to include lime). Use the github link. There are jupyter notebook examples at the bottom 
+of the read txt. 
+
+I've also included a pub on Model Agnostic globally interpretable explanations (MAGIX). This was published last 
+month and I don't see any python code floating around yet. The pub does have some psuedo code though.
+
+
+7. NID (Neural interaction Detector). Like the title suggests, this uses a neural network to detect interactions between features.
+The github link is included in the notebook and a pub is in the folder. The NN is with tensorflow. I haven't had time to study up on this.
+the method seems pretty new and there is not a lot of literature on it. As is, this code will run and the results are using a subset of the
+WIN data. 
+
+
+
+CODE: The code folder is a mix of short scripts that I wrote and stuff that I've cloned from github. 
+
+
+
+
+
+
+
+
+

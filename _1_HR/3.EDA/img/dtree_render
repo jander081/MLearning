@@ -1,0 +1,33 @@
+digraph Tree {
+node [shape=box, style="filled, rounded", color="black", fontname=helvetica] ;
+edge [fontname=helvetica] ;
+0 [label=<TRV.Price &le; -0.1127<br/>gini = 0.4166<br/>samples = 28105<br/>value = [19790, 8315]>, fillcolor="#e5813994"] ;
+1 [label=<TRV.Price &le; -1.5288<br/>gini = 0.4962<br/>samples = 13032<br/>value = [7082, 5950]>, fillcolor="#e5813929"] ;
+0 -> 1 [labeldistance=2.5, labelangle=45, headlabel="True"] ;
+2 [label=<TRV.Price &le; -1.6244<br/>gini = 0.3171<br/>samples = 2196<br/>value = [434, 1762]>, fillcolor="#399de5c0"] ;
+1 -> 2 ;
+3 [label=<gini = 0.1642<br/>samples = 565<br/>value = [51, 514]>, fillcolor="#399de5e6"] ;
+2 -> 3 ;
+4 [label=<gini = 0.3594<br/>samples = 1631<br/>value = [383, 1248]>, fillcolor="#399de5b1"] ;
+2 -> 4 ;
+5 [label=<nbr_comp &le; 0.4141<br/>gini = 0.4742<br/>samples = 10836<br/>value = [6648, 4188]>, fillcolor="#e581395e"] ;
+1 -> 5 ;
+6 [label=<gini = 0.4827<br/>samples = 9209<br/>value = [5462, 3747]>, fillcolor="#e5813950"] ;
+5 -> 6 ;
+7 [label=<gini = 0.3952<br/>samples = 1627<br/>value = [1186, 441]>, fillcolor="#e58139a0"] ;
+5 -> 7 ;
+8 [label=<TRV.Price &le; 0.4915<br/>gini = 0.2646<br/>samples = 15073<br/>value = [12708, 2365]>, fillcolor="#e58139d0"] ;
+0 -> 8 [labeldistance=2.5, labelangle=-45, headlabel="False"] ;
+9 [label=<tot_ref_rule_cnt &le; 1.2649<br/>gini = 0.3627<br/>samples = 6016<br/>value = [4584, 1432]>, fillcolor="#e58139af"] ;
+8 -> 9 ;
+10 [label=<gini = 0.3446<br/>samples = 5473<br/>value = [4262, 1211]>, fillcolor="#e58139b7"] ;
+9 -> 10 ;
+11 [label=<gini = 0.4827<br/>samples = 543<br/>value = [322, 221]>, fillcolor="#e5813950"] ;
+9 -> 11 ;
+12 [label=<TRV.Price &le; 0.9594<br/>gini = 0.1848<br/>samples = 9057<br/>value = [8124, 933]>, fillcolor="#e58139e2"] ;
+8 -> 12 ;
+13 [label=<gini = 0.2437<br/>samples = 3873<br/>value = [3323, 550]>, fillcolor="#e58139d5"] ;
+12 -> 13 ;
+14 [label=<gini = 0.1368<br/>samples = 5184<br/>value = [4801, 383]>, fillcolor="#e58139eb"] ;
+12 -> 14 ;
+}

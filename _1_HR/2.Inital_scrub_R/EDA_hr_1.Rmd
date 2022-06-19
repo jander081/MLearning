@@ -1,0 +1,783 @@
+---
+title: "Competitor data"
+output: html_document
+---
+
+Notes: This was basically initial data wrangling using R. I imported the joined data below. At the end of this script, the file exports a semi-processed csv to the processed2 folder. It also splits up the data end exports data type csvs to a subfolder in processed2.
+
+
+```{r}
+merged = read.csv('../data/processed1/07_27_p1.csv', stringsAsFactors = F)
+
+```
+
+
+DATAFRAME - reset
+----------------------------------------------------------------
+```{r}
+#reset - this is only to allow a quick reset instead of reloading the entire csv
+data = merged
+#names(data)
+
+```
+
+FUNCTIONS
+These are just some cleaning functions that I used for the inital scub
+I was learning as I worked on this stuff. I moved to python soon after this so that I could archive my scripts and pull scripts from Github to use. Also, some of the R packages would not install due to security blocks (i.e. caret, RExcel). The functions below work though.
+----------------------------------------------------------------
+```{r}
+
+# Date change
+dt_chng1 = function(date){
+  date = strsplit(date, " ")[[1]]
+  date = date[1]
+  #date = as.Date(date, format = '%m/%d/%Y')
+  return(date)
+}
+# cannot convert year only to date class - use factor
+
+# ID date columns
+x = grep('dt|Year|Date', names(df)) 
+lst = c()
+for(col in x){
+  col = colname(col)
+  print(col)
+  lst = c(lst, col)
+}
+# Write a script later
+
+
+#Feature info
+
+c_info = function(column){
+  class = paste0('class: ', class(column))
+  type =  paste0('class: ', typeof(column))
+  #enter as data$colname
+  if(typeof(column) == 'character' & length(table(column)) < 25){
+    
+    blanks = paste0('The number of empty values: ', length(column[column == '']))
+
+    factors = paste0('The number of factors: ', length(table(column)))
+    
+    return(list(class, type, table(column, useNA = 'always'), factors, blanks))
+    
+  }else if(typeof(column) == 'character' & length(table(column)) >= 25){
+    
+     blanks = paste0('The number of empty values: ', length(column[column == '']))
+     NAs =  paste0('The number of <na> values: ', length(column[is.na(column)]))
+     comment = 'Over 25 factors. Probably not useable'
+     factors = paste0('The number of factors: ', length(table(column)))
+    
+    return(list(class, type, blanks, NAs, factors, comment)) 
+     
+  }else if(typeof(column) == 'integer' | typeof(column) == 'double'){
+    
+    zeros = paste0('The number of zeros: ', length(column[column == 0]))
+    NAs =  paste0('The number of <na> values: ', length(column[is.na(column)]))
+    blanks = paste0('The number of empty values: ', length(column[column == '']))
+    return(list(class, type, summary(column), zeros, blanks, NAs)) 
+  }
+}
+
+#Drop function
+
+
+colnum = function(col, dframe){
+  #must enter colname as strng
+  num = grep(col, colnames(dframe))
+  return(num)
+}
+
+colname = function(num, dframe){
+  num = colnames(df)[num]
+  return(num)
+}
+
+
+d_list = function(col){
+  #dlist must already be created
+  num = colnum(col)
+  dlist <<- c(dlist, num)
+  return(dlist)
+}
+
+```
+
+
+
+
+
+DATE
+----------------------------------------------------------------
+```{r}
+#date = as.Date("9/8/2017", "%m/%d/%Y")
+
+
+#length(data$Date.of.Submission[data$Date.of.Submission == ""])
+df = data[data$Date.of.Submission != "", ]
+#length(df$Date.of.Submission[df$Date.of.Submission == ""])
+df$Date.of.Submission = sapply(df$Date.of.Submission, FUN = dt_chng1)
+df$Date.of.Submission = as.Date(df$Date.of.Submission, format = '%m/%d/%Y')
+
+df$pol_entry_dt = gsub('-', '/', df$pol_entry_dt)
+df$pol_entry_dt = as.Date(df$pol_entry_dt, format = '%d/%b/%y')
+
+df$pol_eff_dt = gsub('-', '/', df$pol_eff_dt)
+df$pol_eff_dt = as.Date(df$pol_eff_dt, format = '%d/%b/%y')
+
+df$FirstQuoteYear = as.factor(df$FirstQuoteYear)
+df$FirstEffYear = as.factor(df$FirstEffYear)
+#df$Date.of.Submission[1:2]
+```
+
+
+BATCH 1
+----------------------------------------------------------------
+```{r}
+#df$XXX = as.factor(df$xxxx)
+
+# c_info(df$UWC)
+df$UWC = as.factor(df$UWC)
+# c_info(df$Sales.Director)
+df = df[df$Sales.Director != "", ]
+# c_info(df$Prime)
+# c_info(df$Competitor)                  # 42 empty; try with word vec or group
+df = df[df$Competitor != "", ]
+# c_info(df$Competitor.Premium.Band)      # 1 empty
+df = df[df$Competitor.Premium.Band != "", ]
+df$Competitor.Premium.Band = as.factor(df$Competitor.Premium.Band)
+# c_info(df$Competitor.Premium)
+# c_info(df$Low.Competitor.for.Comparison)        # Empty values are "N"
+# df$Low.Competitor.for.Comparison[df$Low.Competitor.for.Comparison == ""] = 'N'
+df = df[df$Low.Competitor.for.Comparison == 'Y', ]
+df = df[, names(df) != 'Low.Competitor.for.Comparison']
+# c_info(df$TRV.Price)
+# c_info(df$TRV.Premium.Band)
+# c_info(df$TRV.Win)                          # decent balance -> pulled 
+# c_info(df$Region)
+# c_info(df$State)
+# c_info(df$Segment_x)
+colnames(df)[colnames(df)=="Segment_x"] = "Segment"
+# c_info(df$Program)
+# c_info(df$Program.Code)
+# c_info(df$Bldg.TIV)                               
+# c_info(df$Contents.TIV)                     
+# c_info(df$Policy.TIV)
+df = df[df$Policy.TIV != 0, ]
+# c_info(df$Bldg.TIV.Band)
+# c_info(df$Content.TIV.Band)
+# c_info(df$Policy.TIV.Band)
+```
+
+
+BATCH 2
+----------------------------------------------------------------
+```{r}
+# df$XXX = as.factor(df$xxxx)
+
+# c_info(df$Week.of.Entry)
+# c_info(df$Issued.Policies)            # decent balance. Removed for win ratio
+# c_info(df$nbr_comp)
+# c_info(df$max_comp_price)
+# df = df[, names(df) != 'max_comp_price']
+# c_info(df$min_comp_price)
+# df = df[, names(df) != 'min_comp_price']
+# c_info(df$mean_trv_price)
+# df = df[, names(df) != 'mean_trv_price']
+# c_info(df$min_tiv)
+# which(df$min_tiv <= 100) 
+# df = df[, names(df) != 'min_tiv']
+# df = df[df$min_tiv > 100, ]
+# c_info(df$max_tiv)
+# df = df[, names(df) != 'max_tiv']
+# c_info(df$min_Bldg_TIV)
+# df = df[, names(df) != 'min_Bldg_TIV']
+# c_info(df$max_Bldg_TIV)
+# df = df[, names(df) != 'max_Bldg_TIV']
+# c_info(df$min_Contents_TIV)
+# df = df[, names(df) != 'min_Contents_TIV']
+# c_info(df$max_Contents_TIV)
+# df = df[, names(df) != 'max_Contents_TIV']
+# c_info(df$Segment_y)
+# df = df[, names(df) != 'Segment_y']
+# c_info(df$FirstQuoteYear)
+# c_info(df$FirstEffYear)
+# c_info(df$pol_entry_dt)
+# c_info(df$pol_eff_dt)
+# c_info(df$count) # count of what?
+# c_info(df$cmp)
+# df$cmp = as.factor(df$cmp)
+# c_info(df$wc)
+# df$wc = as.factor(df$wc)
+# c_info(df$auto)
+# df$auto = as.factor(df$auto)
+# c_info(df$umb)
+# df$umb = as.factor(df$umb)
+# c_info(df$mstr_agt_cd)
+# c_info(df$pri_agt_cd)
+# c_info(df$sub_agt_cd)
+# c_info(df$mnln_cd)
+df$mnln_cd = as.factor(df$mnln_cd)
+# c_info(df$rrv_rt_fct)
+# c_info(df$insured_zip_cd)
+df$insured_zip_cd = as.factor(df$insured_zip_cd)
+# c_info(df$tot_bld_annl_rev_amt)
+# na.omit(df$tot_bld_annl_rev_amt)
+df = df[!((is.na(df$tot_bld_annl_rev_amt))), ]
+# table(df$tot_bld_annl_rev_amt)
+# which(is.na(df$tot_bld_annl_rev_amt))
+# c_info(df$fnl_prc_pt_fct)
+# c_info(df$orig_prem_amt) # = TRV.Price
+# c_info(df$coast_ind) # imbalanced with 51 empty -> KNN
+# c_info(df$orig_prem_amt_r_sum_loc_tiv_amt) # ratio, likely dependent
+# c_info(df$orig_prem_amt_r_pol_bld_lmt_amt) # same
+
+```
+
+BATCH 3
+----------------------------------------------------------------
+```{r}
+
+
+# c_info(df$orig_prem_amt_r_loc_tiv_amt)
+# c_info(df$orig_prem_amt_r_sum_bld_sqftage_qty)        # empty column
+# c_info(df$orig_prem_amt_r_pol_cntnt_lmt_amt)          # empty column
+# c_info(df$orig_prem_amt_r_pol_bld_lmt_amt.1)
+# c_info(df$natl_brkr_cd) # >20k empty
+# df = df[, names(df) != 'natl_brkr_cd']
+# c_info(df$tot_ref_rule_cnt) 
+# c_info(df$agt_subm_pol_cnt)
+# c_info(df$busyr_bkt)                                  # approx 4k missing
+# c_info(df$earlyshop_mth_bkt)
+# c_info(df$pol_bld_lmt_amt)
+# c_info(df$pol_cntnt_lmt_amt)
+# c_info(df$pit_cscoreg_bkt)                              # approx 5k missing
+# c_info(df$pit_fscoreg_bkt)                            # same
+# c_info(df$SPRNKL_IND_bkt)                            # unbalanced
+# c_info(df$LOC_BLD_AGE_bkt)
+# c_info(df$pcls_cd_bkt)
+# c_info(df$unit_prem)
+# c_info(df$bld_ind)
+df$bld_ind = as.factor(df$bld_ind)
+# c_info(df$tiv)
+# c_info(df$terr_pctl_bldgcrime)
+# which(df$terr_pctl_bldgcrime < 0) # over 100
+# c_info(df$terr_pctl_bldgfire)
+# c_info(df$terr_pctl_weather)
+# c_info(df$terr_pctl_water)
+# c_info(df$terr_pctl_cntscrime)
+# c_info(df$terr_pctl_cntsfire)
+# c_info(df$terr_pctl_liab)
+# c_info(df$afi_pol_cnt)
+# c_info(df$pri_clm_cnt)
+
+```
+
+
+
+
+
+
+INITIAL FEATURE ENGINEERING
+---------------------------------------------------------------
+```{r}
+#compare = df[, c('Competitor.Premium', 'Competitor', 'TRV.Price')]
+#compare = df[, c("Contents.TIV", "Bldg.TIV", "pol_cntnt_lmt_amt", "pol_bld_lmt_amt")]
+
+#compare = df[, c('tot_ref_rule_cnt', 'count', 'agt_subm_pol_cnt')]
+
+#compare = cbind(compare, y)
+
+#table(df$Low.Competitor.for.Comparison)
+# do a percentage for policy type as well
+```
+
+1. Bldg.TIV/Content as a percentage of TIV
+2. cmp as a percent of total policy count
+3. ... 
+
+```{r}
+df$prcnt_blg_tiv = (df$Bldg.TIV/df$Policy.TIV)
+df$prcnt_pol_cmp = (df$cmp/df$count)
+
+```
+
+Additional drops: 
+df$orig_prem_amt_r_loc_tiv_amt = TRVprice/TIV
+orig_prem_amt_r_pol_bld_lmt_amt= TRVprice/bldTIV
+orig_prem_amt_r_loc_tiv_amt
+
+
+tot_ref_rule_cnt = no idea
+df$tot_bld_annl_rev_amt = bld annual revenue?
+
+
+DROPS
+------------------------------------------------------------------
+
+```{r}
+
+df = df[, -which(names(df) %in% c("cmp", "wc", "auto", "umb", "Bldg.TIV.Band", "Content.TIV.Band", "Policy.TIV.Band",  "Competitor.Premium.Band", "Date.of.Submission", "Program.Code", "pol_cntnt_lmt_amt",  "pol_bld_lmt_amt", 'max_comp_price', 'min_comp_price', 'mean_trv_price', 'min_tiv', 'max_tiv', 'min_Bldg_TIV', 'max_Bldg_TIV', 'min_Contents_TIV', 'max_Contents_TIV', 'Segment_y', 'orig_prem_amt_r_loc_tiv_amt', 'orig_prem_amt_r_pol_cntnt_lmt_amt',  'tiv', 'orig_prem_amt_r_sum_loc_tiv_amt', 'orig_prem_amt_r_pol_bld_lmt_amt', 'orig_prem_amt_r_pol_bld_lmt_amt.1', 'unit_prem', "Contents.TIV", "Policy.TIV", 'TRV.Premium.Band', 'Bldg.TIV', 'Sales.Director', 'Week.of.Entry', 'pcls_cd_bkt'))]
+
+```
+
+
+
+RESPONSE
+-----------------------------------------------------------------
+
+Drop for now
+Pull feat with missing values for now
+```{r}
+x = c('busyr_bkt', 'pit_cscoreg_bkt', 'pit_fscoreg_bkt')
+knn_var = c()
+for(i in x){
+  i = grep(i, colnames(df))
+  #print(i)
+  knn_var = c(knn_var, i)
+}
+
+df = df[, -knn_var]
+```
+
+
+
+KNN
+---------------------------------------------------------------
+Need to Clean up other predictors before running this
+coast_ind -> 50
+busyr_bkt -> 4k
+pit_cscoreg_bkt -> 5k
+pit_fscoreg_bkt -> 5k
+
+MCAR: missing completely at random. This is the desirable scenario in case of missing data. 
+
+MNAR: missing not at random. Missing not at random data is a more serious issue and in this case it might be wise to check the data gathering process further and try to understand why the information is missing. For instance, if most of the people in a survey did not answer a certain question, why did they do that? Was the question unclear? 
+
+Consider MICE package
+
+```{r}
+# library(VIM)
+# aggr_plot = aggr(df, col=c('navyblue','red'), numbers=TRUE, sortVars=TRUE, labels=names(df), cex.axis=.7, gap=3, ylab=c("Histogram of missing data","Pattern"))
+
+```
+
+
+```{r}
+# set.seed(81)
+# #names(df)
+```
+
+
+```{r}
+# x = c('coast_ind', 'busyr_bkt', 'pit_cscoreg_bkt', 'pit_fscoreg_bkt')
+# knn_var = c()
+# for(i in x){
+#   i = grep(i, colnames(df))
+#   #print(i)
+#   knn_var = c(knn_var, i)
+# }
+# 
+# knn_feat = knn_feat[, -knn_var]
+```
+
+
+EXPORT
+------------------------------------------------------------------
+
+```{r}
+write.csv(df, file = "../data/processed2/WR_27_p2.csv") 
+
+```
+
+EXPORT CLASS DATA
+--------------------------------------------------------------
+REMOVE RESPONSE VARS before splitting into data types
+```{r}
+x = c('TRV.Win', 'Issued.Policies', 'Competitor.Premium')
+y_ = c()
+for(i in x){
+  i = grep(i, colnames(df))
+  y_ = c(y_, i)
+}
+
+y = df['TRV.Win']
+
+df1 = df[, -y_]
+```
+
+
+
+FEATURE LISTS
+REMEMBER: YOU HAVE TO CALL THIS FUNCTION
+```{r}
+num_feat = c()
+w2v_feat = c()
+cat_feat = c()
+date_feat = c()
+
+feat_list = function(df, factor_num){
+  # try to set as global
+  # num_feat = c()
+  # w2v_feat = c()
+  # cat_feat = c()
+  
+  for(col in colnames(df)){
+    # print(col)
+    # print(df[col][5, ])
+    
+    if((typeof(df[col][5, ]) == "character" | class(df[col][5, ]) == "factor") & (length(table(df[col])) >= factor_num)){
+      # print('w2v')
+      w2v_feat <<- c(w2v_feat, col)
+    }else if((typeof(df[col][5, ]) == "character" | class(df[col][5, ]) == "factor") & (length(table(df[col])) < factor_num)){
+      # print('cat')
+      cat_feat <<- c(cat_feat, col)
+    }else if(typeof(df[col][5, ]) == "double" & class(df[col][5, ]) == "Date"){
+      date_feat <<- c(date_feat, col)
+    }else if(typeof(df[col][5, ]) == "double" | typeof(df[col][5, ]) == "integer"){
+      # print('num')
+      num_feat <<- c(num_feat, col)}
+    
+    }
+}
+
+
+# must reset empty lists
+feat_list(df1, 50)
+num_df = df1[num_feat]
+date_df = df1[date_feat]
+cat_df = df1[cat_feat]
+w2v_df = df1[w2v_feat]
+
+
+#names(cat_df)
+#str(cat_df)
+```
+
+
+```{r}
+#
+names(cat_df)
+```
+
+
+```{r}
+write.csv(date_df, file = "../data/processed2/class_dfs/WR_27_date.csv")
+write.csv(num_df, file = "../data/processed2/class_dfs/WR_27_num.csv") 
+write.csv(cat_df, file = "../data/processed2/class_dfs/WR_27_cat.csv") 
+write.csv(w2v_df, file = "../data/processed2/class_dfs/WR_27_w2v.csv") 
+```
+
+
+
+
+
+BELOW THIS LINE ARE EXTRA CODE THAT I DID NOT END UP USING. I SWITCHED TO PYTHON AFTER THIS
+----------------------------------------------------------------------------
+
+
+XG_BOOST
+----------------------------------------------------------------
+Need knn first
+```{r}
+# library(data.table)
+# library(xgboost)
+```
+
+```{r}
+# xgb_pred_var_list = 
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+FEATURE SELECTION -> CAT
+-------------------------------------------------------------------
+
+
+BORUTA******************************************
+Boruta is an all relevant feature selection wrapper algorithm, capable of working with any classification method that output variable importance measure (VIM); by default, Boruta uses Random Forest. The method performs a top-down search for relevant features by comparing original attributes' importance with importance achievable at random, estimated using their permuted copies, and progressively elliminating irrelevant featurs to stabilise that test.
+
+```{r}
+length(names(cat_df))
+cat = cbind(cat_df, y)
+
+library(Boruta)
+# Decide if a variable is important or not using Boruta
+boruta_output = Boruta(TRV.Win ~ ., data = cat, doTrace=2)  
+# After 11 iterations, +5.6 mins 
+# 14 attributes confirmed important: 
+# No attributes deemed unimportant.
+boruta_signif = names(boruta_output$finalDecision[boruta_output$finalDecision %in% c("Confirmed", "Tentative")])  
+
+plot(boruta_output, cex.axis=.7, las=2, xlab="", main="Variable Importance")  
+# pcls_cd_bkt is the least important --> drop
+```
+
+Boruta iteratively compares importances of attributes with importances of shadow attributes, created by shuffling original ones. Attributes that have significantly worst importance than shadow ones are being consecutively dropped. On the other hand, attributes that are significantly better than shadows are admitted to be Confirmed. Shadows are re-created in each iteration. Algorithm stops when only Confirmed attributes are left, or when it reaches maxRuns importance source runs. If the second scenario occurs, some attributes may be left without a decision. They are claimed Tentative. You may try to extend maxRuns or lower pValue to clarify them, but in some cases their importances do fluctuate too much for Boruta to converge
+
+STEP-WISE REGRESSION**********************************
+
+```{r}
+base.mod = lm(TRV.Win ~ 1 , data= cat)    # base intercept only model
+
+all.mod = lm(TRV.Win ~ . , data= cat) # full model with all predictors
+
+stepMod = step(base.mod, scope = list(lower = base.mod, upper = all.mod), direction = "both", trace = 0, steps = 1000)  # perform step-wise algorithm
+
+shortlistedVars = names(unlist(stepMod[[1]])) # get the shortlisted variable.
+
+shortlistedVars = shortlistedVars[!shortlistedVars %in% "(Intercept)"]  # remove intercept 
+
+length(shortlistedVars[1:10])
+str(factor(cat$Segment))
+
+length(shortlistedVars[11:55])
+str(factor(cat$State))
+
+length(shortlistedVars)
+#shortlistedVars
+```
+
+
+
+
+
+FEATURE SELECTION -> NUM
+----------------------------------------------------------------
+
+
+LINEAR REGRESSION
+--------------------------------------------
+```{r}
+length(names(num_df))
+y = df[, 'Competitor.Premium']
+num = cbind(num_df, y)
+num = num[, sapply(num, is.numeric)]
+
+set.seed(81) 
+
+train_index = sample(1:nrow(num), 0.8*nrow(num)) # indices for 80% training data
+num_train = num[train_index, ] # training data
+num_test = num[-train_index, ] # test data
+
+#fit = lm(y ~ ., data = num_train)
+#summary(fit)
+#plot(fit)
+#library(car)
+#vif(fit) 
+# cooks.distance(fit)
+#max(cooks.distance(fit))
+#which(cooks.distance(fit) > 3)
+```
+
+An alternative interpretation is to investigate any point over 4/n, where n is the number of observations.
+TRV.Price
+
+```{r}
+# summary(num$y)
+# plot(num$y)
+# d = density(num$y) 
+# plot(d) #right skewed
+
+num$y = log(num$y)
+```
+
+```{r}
+# x = num$TRV.Price
+# summary(x)
+# plot(x)
+# d = density(x) 
+# plot(d) #right skewed
+
+num$TRV.Price = log(num$TRV.Price)
+```
+
+```{r}
+# x = num$tot_bld_annl_rev_amt
+# summary(x)
+# plot(x)
+which(x == max(x))
+num = num[-1995, ]
+
+# d = density(x) 
+# plot(d) #right skewed
+
+num$tot_bld_annl_rev_amt = log(num$tot_bld_annl_rev_amt)
+```
+
+
+SCALE DATAFRAME - this converts to matrix
+
+```{r}
+num1 = scale(num)
+num1 = as.data.frame(num1)
+```
+
+
+```{r}
+summary(num1$TRV.Price)
+fit = lm(num1$y ~ num1$TRV.Price)
+summary(fit)
+summary(fit)$adj.r.squared
+which(cooks.distance(fit) > 1)
+drops = as.numeric(names(which(cooks.distance(fit) > 1)))
+drops
+
+```
+
+tot_bld_annl_rev_amt
+```{r}
+
+fit = lm(num1$y ~ num1$tot_bld_annl_rev_amt)
+summary(fit)
+summary(fit)$adj.r.squared
+drops = as.numeric(names(which(cooks.distance(fit) > 1)))
+drops
+#num1 = num1[-drops, ]
+
+```
+
+
+```{r}
+fit = lm(num1$y ~ num1$nbr_comp)
+summary(fit)
+summary(fit)$adj.r.squared
+drops = as.numeric(names(which(cooks.distance(fit) > 1)))
+drops
+#num1 = num1[-drops, ]
+```
+
+```{r}
+fit = lm(num1$y ~ num1$count)
+summary(fit)
+summary(fit)$adj.r.squared
+drops = as.numeric(names(which(cooks.distance(fit) > 1)))
+drops
+#num1 = num1[-drops, ]
+```
+
+```{r}
+fit = lm(num1$y ~ num1$rrv_rt_fct)
+summary(fit)
+summary(fit)$adj.r.squared
+drops = as.numeric(names(which(cooks.distance(fit) > 1)))
+drops
+#num1 = num1[-drops, ]
+```
+
+```{r}
+fit = lm(num1$y ~ num1$nbr_comp)
+summary(fit)
+summary(fit)$adj.r.squared
+drops = as.numeric(names(which(cooks.distance(fit) > 1)))
+drops
+#num1 = num1[-drops, ]
+```
+
+
+
+
+COOKS FUNCTION -> DOESN'T WORK YET
+---------------------------------------------------
+```{r}
+
+
+
+rmv_cook = function(col, dframe, tol){
+  
+  
+  dframe = dframe[, sapply(dframe, is.numeric)]
+  x = dframe[, col]
+  
+  
+  fit= lm(y ~ x, dframe)
+  cooks = which(cooks.distance(fit) > tol)
+  print(cooks)
+  cooks = as.numeric(names(cooks))
+  output = dframe[-c(cooks), ]
+  return(output)
+  
+}
+
+test = rmv_cook('TRV.Price', test, 2)
+
+cooks_dist = function(dataframe, column){
+  dataframe = dataframe[, sapply(dataframe, is.numeric)]
+  fit = lm(dataframe[, column] ~ 1, data = dataframe)
+  cooksd = cooks.distance(fit)
+  print(which(cooksd > 4 * mean(cooksd, na.rm = TRUE)))
+  influential = as.numeric(names(cooksd)[(cooksd > 4 * mean(cooksd, na.rm = TRUE))])
+  print(influential)
+  final = dataframe[-influential, ]
+  return(final)
+}
+
+test = cooks_dist(test, 2)
+
+```
+
+
+```{r}
+library(car)
+fit = lm(y ~ ., data = num_train)
+
+# Assessing Outliers
+outlierTest(fit) # Bonferonni p-value for most extreme obs
+qqPlot(fit, main="QQ Plot") #qq plot for studentized resid 
+leveragePlots(fit) # leverage plots
+# Influential Observations
+# added variable plots 
+av.Plots(fit)
+# Cook's D plot
+# identify D values > 4/(n-k-1) 
+cutoff = 4/((nrow(num_train)-length(fit$coefficients)-2)) 
+plot(fit, which=4, cook.levels=cutoff)
+# Influence Plot 
+influencePlot(fit, id.method="identify", main="Influence Plot", sub="Circle size is proportial to Cook's Distance" )
+
+```
+
+
+
+
+
+
+
+```{r}
+library(MASS)
+ridge = lm.ridge(y ~ ., data = num_train)
+summary(ridge)
+library(car)
+#vif(ridge) 
+```
+
+
+Random forest regressor
+
+```{r}
+rf = RandomForestRegressor(n_estimators=10)
+rf.fit(X, y)
+
+rf.feature_importances_
+```
+
+
+
+
+
+Notes
+-------------------------------------------------
+
+Need to write code for cooks
+work with other feature selection algorithms

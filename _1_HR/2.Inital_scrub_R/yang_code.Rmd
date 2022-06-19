@@ -1,0 +1,179 @@
+---
+title: "Yang"
+output: html_document
+---
+
+```{r}
+library(data.table)
+library(xgboost)
+
+traindata <- fread('/casd8/crossline/conversion/cmp/code/Phase3/marketprice/comp_data/comp_hr_dt04302018_train.csv')
+# validata <- fread('/casd8/crossline/conversion/cmp/code/Phase3/marketprice/comp_data/comp_hr_dt04302018_validation.csv')
+```
+
+```{r}
+## define the predictors
+xgb_pred_var_list = c(
+  'orig_prem_amt',
+  'orig_prem_amt_r_sum_loc_tiv_amt',
+  'orig_prem_amt_r_pol_bld_lmt_amt',
+  'orig_prem_amt_r_loc_tiv_amt',
+  'orig_prem_amt_r_sum_bld_sqftage_qty',
+  'orig_prem_amt_r_pol_cntnt_lmt_amt',
+  'orig_prem_amt_r_pol_bld_lmt_amt',
+  
+  'Growth_Category',
+  'Industry',
+  'natl_brkr_cd',
+  
+  'market',
+  'scbp_ind',
+  'region',
+  'tot_ref_rule_cnt',
+  'agt_subm_pol_cnt',
+  'coast_ind',
+  'busyr_bkt',
+  'earlyshop_mth_bkt',
+  'seg_nm',
+  'pol_bld_lmt_amt',
+  'pol_cntnt_lmt_amt',
+  'pit_cscoreg_bkt',
+  'pit_fscoreg_bkt',
+  'SPRNKL_IND_bkt',
+  'SUM_BLD_SQFTAGE_bkt',
+  'LOC_BLD_AGE_bkt',
+  'pcls_cd_bkt',
+  'unit_prem',
+  'bld_ind',
+  'tiv',
+  'terr_pctl_bldgcrime',
+  'terr_pctl_bldgfire',
+  'terr_pctl_weather',
+  'terr_pctl_water',
+  'terr_pctl_cntscrime',
+  'terr_pctl_cntsfire',
+  'terr_pctl_liab',
+  'afi_pol_cnt',
+  'state_grp1',
+  'pgm_cd_rev3'
+)
+```
+
+
+```{r}
+traindata_copy = traindata
+
+## check missing in the predictor and response variable
+## if missing then assign "miss" to factor or character variable
+## assign -1 to numeric variable
+length(which(is.na(traindata$trv_win)))
+for(i in seq(1, length(xgb_pred_var_list))){
+  var = xgb_pred_var_list[i]
+  if(length(which(is.na(traindata[[var]]))) > 0){
+    if(class(traindata[[var]]) %in% c('numeric', 'integer')){
+      eval(parse(text = paste0('traindata[is.na(', var, '), ', var,':= -1]')))
+    }
+    else{
+      eval(parse(text = paste0('traindata[is.na(', var, '), ', var,':= "missing"]')))
+    }
+    
+  }
+}
+```
+
+
+```{r}
+length(which(is.na(traindata$trv_win)))
+for(i in seq(1, length(xgb_pred_var_list))){
+  var = xgb_pred_var_list[i]
+  print(length(which(is.na(traindata[[var]]))))
+}
+
+## create train and validation data
+abcd = model.matrix(object=as.formula( paste0("trv_win~",paste0(xgb_pred_var_list, collapse = "+") ) ), data = traindata)
+dtrain <- xgb.DMatrix(abcd, label=traindata[ , trv_win] )
+
+n_treesss = 500
+ntreadsss = 3
+etas = c(0.01, 0.1, 0.5, 1)
+max_depths = c(4, 6, 8)
+gammas = c(0.05, 0.1, 0.5)
+cv_result = list()
+param_grid_nbr = 0
+for(eta in etas){
+  for(max_depth in max_depths){
+    for(gamma in gammas){
+      print(paste("eta is ", eta, ", max_depth is ", max_depth, ", gamma is ", gamma, ", the cv result is", sep = ""))
+      param_grid_nbr = param_grid_nbr + 1
+      cv_model = xgb.cv(params = list(eta = eta, 
+                                      max_depth = max_depth,
+                                      gamma = gamma,
+                                      objective = "binary:logistic"),
+                        data = dtrain,
+                        verbose = 2,
+                        print.every.n = 50,
+                        early.stopping.rounds = 50,
+                        stratified=FALSE,
+                        nrounds = n_treesss, 
+                        nthread = ntreadsss, 
+                        metrics = list("logloss", 'auc'),
+                        nfold = 5)
+      cv_result[[param_grid_nbr]] = list(eta = eta, max_depth = max_depth, gamma = gamma, cv_result = cv_model)
+    }
+  }
+}
+```
+
+
+```{r}
+# no_cv = 2
+# n_treesss = 500
+# ntreadsss = 3
+
+# params1 = list(eta = 0.007, 
+#                  max_depth = 4,
+#                  min_child_weight = 20,
+#                  subsample = 0.7,
+#                  colsample_bytree = 0.7,
+#                  objective = "reg:linear",
+#                  lambda  = 0.1,
+#                  alpha = 0.1,
+#                  gamma  = 0.05,
+#                  max_delta_step = 1
+# )
+# model1_cv <- xgb.cv(data = dtrain, params = params1, verbose = 2, print.every.n = 10,
+#                     early.stopping.rounds = 50, stratified=FALSE,
+#                     nrounds = ifelse( no_cv == 1, 100, n_treesss ), nthread = ntreadsss, metrics = 'rmse',
+#                     nfold = 5)
+# png(file = "model1_cv.jpg")
+# plot(model1_cv$train.rmse.mean, type = "l", col = "red", lty = 3)
+# lines(model1_cv$test.rmse.mean, type = "l", col = "blue", lty = 5)
+# legend("topright", legend = c("train rmse", "test rmse"), col=c("red", "blue"), pch=1)
+# dev.off()
+
+save(cv_result, file="model2_xgboost.RData")
+Sys.time()
+
+
+### after the above steps finished
+load("model2_xgboost.RData")
+pdf(file = "model2_xgboost_cv.pdf")
+for(i in seq(1:length(cv_result))){
+    # AUC
+    plot(cv_result[[i]]$cv_result$train.auc.mean, type = "l", col = "red", lty = 3)
+    lines(cv_result[[i]]$cv_result$test.auc.mean, type = "l", col = "blue", lty = 5)
+    legend("topright", legend = c("train rmse", "test rmse"), col=c("red", "blue"), pch=1)
+    title(print(paste("eta is ", cv_result[[i]]$eta, ", max depth is ", cv_result[[i]]$max_depth, ", gamma is ",cv_result[[i]]$gamma, "AUC",sep = "")))
+
+    # LOGLOSS
+    plot(cv_result[[i]]$cv_result$train.logloss.mean, type = "l", col = "red", lty = 3)
+    lines(cv_result[[i]]$cv_result$test.logloss.mean, type = "l", col = "blue", lty = 5)
+    legend("topright", legend = c("train rmse", "test rmse"), col=c("red", "blue"), pch=1)
+    title(print(paste("eta is ", cv_result[[i]]$eta, ", max depth is ", cv_result[[i]]$max_depth, ", gamma is ",cv_result[[i]]$gamma, "LogLoss",sep = "")))
+
+}
+dev.off()
+
+```
+
+
