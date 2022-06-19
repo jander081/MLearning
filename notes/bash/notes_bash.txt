@@ -1,0 +1,55 @@
+BASH
+
+-Notes: windows does not use bash easily. Suggest figuring this out. Can be used to create executables easily on my computer (activate env, run python script, etc)
+
+start here:
+https://www.thewindowsclub.com/how-to-run-sh-or-shell-script-file-in-windows-10
+
+# Locate the environment
+$ where conda
+# Use atom
+select add project folder for tree
+
+$ C:\Users\janderson124\AppData\Local\Continuum\anaconda3\Library\bin\conda.bat
+
+
+$ bash
+$ exit
+
+> chmod ugo+x test.sh
+
+---------------------------- OSX
+
+https://tldp.org/LDP/abs/html/x17129.html
+
+# create file
+% touch <file>
+
+
+% mkdir
+% cp -r < /path/sample.py > < path/folder >
+
+% cp -r /Users/jacob/Desktop/UV/uvai/client/root ~/.uvai
+
+
+   - pyvirtualcam
+   - opencv-python
+   - Pillow
+pyaudio
+soundfile
+pynput (python -m pip install pynput
+
+init frill encoder...
+Traceback (most recent call last):
+  File "main.py", line 42, in <module>
+    frill_model = FrillEncoder(FRILL_MODEL_PATH)
+  File "/Users/jacob/Desktop/uvai/client/models/vomega_model.py", line 33, in __init__
+    self.frill_model = tf.lite.Interpreter(model_path=self.model_path)
+  File "/Users/jacob/opt/anaconda3/envs/ML/lib/python3.8/site-packages/tensorflow/lite/python/interpreter.py", line 205, in __init__
+    _interpreter_wrapper.CreateWrapperFromFile(
+ValueError: Could not open '/Users/jacob/.uvai/models/lite-model_nonsemantic-speech-benchmark_frill_1.tflite'.
+
+
+5. Run:
+
+

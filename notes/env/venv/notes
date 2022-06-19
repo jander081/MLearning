@@ -1,0 +1,42 @@
+
+pip install --upgrade -r requirements.txt
+
+
+USE PYTHON 3 KERNEL?
+
+> . quizBot/bin/activate
+
+> pip freeze > requirements.txt
+
+Virtual environments
+------------------------
+Versions differ for projects
+# get rid of conda env (base) with "conda deactivate"
+
+venv -- do not need 3rd party
+# use window command prompt
+
+# Create virtualenv: 
+> python3 -m venv ENVIRONMENT_NAME 
+
+# Activate virtualenv (Windows): 
+(cd into the directory where you created the virtualenv): 
+
+> ENVIRONMENT_NAME\Scripts\activate 
+
+# Activate virtualenv (OS X / Linux): 
+
+> . ENVIRONMENT_NAME/bin/activate 
+> source ENVIRONMENT_NAME/bin/activate 
+ 
+# Deactivate virtualenv: 
+> deactivate 
+
+# pip is configured with locations that require TLS/SSL, however the ssl module in Python is not available.
+--not resolved. Stick with anaconda for now
+
+# Issue: virtualenv is using 2.7
+> which python  # /usr/bin/python (not 3)
+
+# Delete old env and create an env s.t.:
+> python3 -m venv ENVIRONMENT_NAME 

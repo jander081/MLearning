@@ -1,0 +1,644 @@
+###########################################################################
+## 				COMMAND LINE				##
+###########################################################################
+
+
+General stuff
+--------------
+
+# cannot connect to public wifi. sys preferences - network - DNS - delete
+# OR - reopen browser and type captive.apple.com
+
+SHORT CUTS
+##########
+
+https://support.apple.com/en-us/HT201236
+cmd+shift+N    -> folder
+D -> finder
+
+
+
+
+# copy path
+# right click + option -> select copy path
+
+# or select file and press opt + cmd + c
+
+/Users/jacob/Desktop/docs/notes_/cmd_line/VIM Editor Commands.pdf
+
+
+
+# Install a conda package in the current Jupyter kernel
+import sys
+!conda install --yes --prefix {sys.prefix} numpy
+
+# Install a pip package in the current Jupyter kernel
+import sys
+!{sys.executable} -m pip install numpy
+
+
+##########################################
+# Clean files
+##########################################
+
+akamaihd.net hijack
+
+Use Activity Monitor
+Highlight and hit “i”
+take a sample to view details
+
+Use Go
+/Library/LaunchAgents
+Check folder
+
+/Library/Application Support 
+
+/Library/LaunchDaemons
+
+Chrome: settings->on start up -> "Open a specific page or set of pages" --> delete the link for akamaihd
+
+In App folder: ls -l -a | grep Mar
+
+Masked as "profile" icon in syspref
+
+
+-- this was never really resolve and safaria/firefox are still redirected. However, the re-install for chrome temporarily fixed it (for chrome only)
+
+Practice basic scripting/debugging/file management to solve.ß
+
+
+
+#########################################
+# SPYDER
+#########################################
+
+run by line: CMD + Enter
+
+Code cells- these seem to force the entire script into cells
+# %%
+print('hi')
+# %%
+run code cell: ^ + Enter
+
+Doc Inline: ^ + shift then i   (so basically ^ + I)
+
+
+##########################################
+# FIX KERNEL ISSUE
+##########################################
+
+Kernal was dead when starting .ipynb file. I had previously installed manually a bunch of 
+kernels - probably not smart. But the env was reverting back to python2.7. Anyway, the 
+same manual kernel stayed and when I tried to launch a notebook in a new environment, the 
+manual kernals conflicted with the new kernel and caused a dead kernel.
+
+# check exising kernels - these are not env dependend; exist externally
+$ jupyter kernelspec list
+# Remove the problem child
+$ jupyter kernelspec uninstall two_sigma
+
+Another problem arose. Now spyder would recognize imports while jupyter would not. Running the following in the env from the jupyter notebook and then restarting jupyter solved the issue
+
+$ !python -m ipykernel install --user
+
+Note: this did not create a new kernel
+
+ISSUE CONTINUES....
+
+Jupyter can no longer load imports. The env is correct and the modules are verified, yet jupyter cannot import
+
+Had to append sys.path so the python would look in the correct env site-package folder. This is not a good fix, more of a band aid. I may need to reinstall anaconda to actually fix this. Basically, none of my environments
+are able to look in their respective folders .... shouldn't have messed with the ipkernel perhaps..
+
+LOOKS TO BE THE FINAL SOLUTION
+
+https://stackoverflow.com/questions/37891550/jupyter-notebook-running-kernel-in-different-env
+
+$ python3 -m ipykernel install --user --name ENVNAME --display-name "Python (whatever you want to call it)"
+
+You'll need to restart the notebook after running this. Once it restarts, the sys.paths should be correct
+You also direct kernels to look into other envs
+
+https://ipython.readthedocs.io/en/stable/install/kernel_install.html#kernels-for-different-environments
+
+FROM CMD LINE
+###########
+
+$ jupyter-kernelspec list
+$ jupyter-kernelspec uninstall sigma --y
+$ python -m ipykernel install --user --name IB --display-name "IB"  
+
+$ where python
+$ pip install numpy== --upgrade
+
+# /Users/jacob/opt/anaconda3/envs/nlp_conda
+
+# install in the environment folder
+
+% /Users/jacob/Projects/uvai/UV/bin/python -m ipykernel install --prefix=/Users/jacob/Projects/uvai/UV --name 'uvai'
+
+
+ISSUE CONTINUES..
+
+Completely reinstalled anaconda - doesn't matter. Every new instance of jupyter looks for the sigma env and gives a dead kernel. 
+
+A ‘kernel’ is a program that runs and examines the user’s code. IPython includes a kernel for Python code, and people have written kernels for several other languages.
+
+When Jupyter starts a kernel, it passes it a connection file. This specifies how to set up communications with the frontend.
+
+
+Solution 07/0720
+
+Re-install kernel (see stack), verify with kernel list; check path; restart jupyter lab
+
+
+##########################################
+# KERNEL SOP
+##########################################
+
+# Create env
+# install kernel
+
+#################  Cannot be in an env when installing a new kernel!!!!
+
+$ python -m ipykernel install --user --name ENVNAME --display-name "Python (whatever you want to call it)"
+
+# Ensure json path is correct
+
+# FIX: use jupyter-kernelspec list to locate the kernel jsons
+# Use VIM to open json and modify the path
+# with in env, may need to install ipykernel
+$ (env) pip install ipykernel
+
+
+"/anaconda3/envs/quant/bin/python"
+
+
+{
+ "argv": [
+  "/anaconda3/envs/nav_base/bin/python",
+  "-m",
+  "ipykernel_launcher",
+  "-f",
+  "{connection_file}"
+ ],
+ "display_name": "Python 3 (base)",
+ "language": "python"
+}
+~  
+
+VIM changes :wq  
+######### must save and quit VIM PROPERLY!!!
+
+
+2021 --- also chech which pip is doing the install. Force it to use the env pip
+
+
+PRETTY SURE THIS ISSUE IS CLOSED. I just need to pay attention to the kernels from now on. 
+
+Looks like I'll need to manually install kernels and change notebooks to appropriate kernels
+
+$ conda create --clone nav_base --name whatever
+$ python -m ipykernel install --user --name myenv --display-name "Python (myenv)"
+# Cannot be in an env when installing a new kernel
+
+
+NOTES 03/01/2021
+-----------------
+
+Issues with the kernel.jsons again. Uninstalled the kernel for python3 - probably a mistake. Copied over a json and adjusted it to point to the system installed python3 (usr/bin/python3). The kernel location can be found with "jupyter kernelspace list"
+
+Recommend avoiding this kernel - create kernel for each new env and ensure the json is configured correctly
+
+Current method (?)
+
+- python -m ipykernel install --user --name myenv --display-name "Python (myenv)"
+- then jupyter-kernelspec list to find the location of the kernel.json
+- open the kernel with nano
+- edit the path to lead to python in the correct env
+
+
+
+
+##########################################
+# PYTTSX3
+##########################################
+
+
+Main issue - must have pip installed for that env. If the env is python=3, then pip3 is automatic (just use pip)
+$ !conda install -c anaconda pip --yes
+
+Then run the following
+# need to use 
+$ pip install pyttsx3
+# then also run 
+$ pip install -U pyobjc
+
+view pip freeze, path, and kernel json if needed. 
+
+# make sure it is the right one
+$ import pyttsx3
+$ pyttsx3.__file__ 
+
+
+CMDS
+*************************************
+
+$ kill process
+-----------------------------
+top
+kill -9 PID
+killall Skype
+
+$ netstat -a | grep 5000
+'pick the correct PID'
+
+ps aux | grep python #better!
+
+
+
+$ file <file>: gives info
+
+$ clear: clear terminal
+
+$ open <file>
+
+$ touch: create file
+---------------------
+touch <file>.ext
+
+$ touch 2.txt 3.txt b.txt etc: create multiple files
+
+Change edit time: may need to sort 
+
+
+
+
+$ mkdir <folder> <folder>
+
+Rename = move
+$ mv <oldfile> <newname>
+
+To actually move
+$ mv <file> <folder>/
+
+$ mv <folder>/<file> .     Notice the period; this moves file back to cwd
+
+$ cp <file> <filename>
+
+$ cat
+------------------------
+Can concatenate
+
+$ cat <file> <fileb>
+Returns outputs concatenated
+
+$ cp <file> <folder>/ 
+
+$ rm <folder>/<file>
+
+$ less <file>
+---------------------------
+If you want to read through a large text file it is better to use the less command over an editor as it doesn't load the entire thing into memory. It loads each page into memory a page at a time making it more efficient.
+
+The less command can also be used with output piped through another command.
+
+For example:
+$ ps -ef | less
+
+The above command will show a list of running processes one page at a time.
+You can press either the space bar or the "f" key to scroll forward.
+'q' for quit
+
+
+"Pipe in"
+----------------------------------------
+Use output as input for next command
+
+Example: 
+$ ls <folder>/ | less
+
+1. Takes output list and puts it in a temporary file
+2. The contents of the temp file are then given to the less command
+
+Long way--
+$ ls <folder>/ > tempoutput.txt
+$ less tempoutput.txt
+
+Can do multiple pipes
+
+$ ls <folder>/ | tail -3 | less
+$ ls <folder>/ | tail -3 | sort > newfile.txt
+
+
+
+find CMD
+------------------------
+
+$ find <file>
+
+$ find <folder>/ -name <filename> (or *.txt)
+
+-type file
+-type d
+
+
+Grep
+-------------------------
+Search inside a file
+Case sensitive unless add -I
+
+$ grep -i  <txt> <file>
+
+$ ls | grep <txt>
+
+-v everything except
+
+$ ls | grep -v <txt>
+
+
+AWK CMD
+--------------------------
+Useful for table-like files
+
+$ awk '{print }' <file>
+
+For 1st and 2nd column
+
+$ awk '{print $1, $2}' <file>   If you leave out ',' it will concat
+
+$ awk '{print $(NF-1}' <file>     2nd to last col
+
+
+Get 2nd row;
+$ awk 'NR==2 {print $0}' <file> 
+
+$ awk 'NR==2,NR==5 {print $0}' <file> 
+
+$ awk 'NR==2;NR==5 {print $0}' <file> 
+
+Can add in a fields option (-F) with a separator. Useful if a csv or something
+
+$ awk -F ";" '{print $1}' <file>
+
+
+
+
+Redirect CMD
+---------------------------
+Redirects cmd outputs
+
+$ echo "hello" > newfile.txt
+
+This will replace the existing contents
+
+To append use >>
+
+$ echo "add hello" >> existingfile.txt
+
+$ ls -l . >> new text.txt
+
+$ cat <filea> <fileb> >> newfile.txt
+
+
+
+Assigning value -> use $
+-------------------------------------------------
+
+$ myvar=576
+
+$ echo "$myvar"
+$ echo "the value of my variable is $myvar"
+
+Warning: spaces cause errors!
+
+$ unset myvar
+
+Also
+$ var='hello'
+$ echo ${var}
+This helps to distinguish the var from other characters
+
+***Assign variable to command
+
+$ mycommand=ls
+$ echo $mycommand
+ls
+$ $mycommand
+file.txt myscipt.sh
+
+***Environment variables
+
+$ echo $USER
+$ echo $HOME
+$ echo $PATH
+
+PATH: list of dir that your sys looks for exectuable files
+
+
+
+$ = EXPANSION OPERATOR
+---------------------------------------------------------
+$(COMMAND) = command substitution
+can also use ``. not recommended. Just be aware in case you encounter it.
+
+Assign the output of a command to a var. Useful if you want to use the PATH inside
+another folder
+
+$ d=$(ls)
+This will ex ls and assign it to var d
+
+Use this to copy PATHs easily
+
+$ s=$(pwd)
+
+$ cp <file> $s
+
+This is huge
+
+$ read myvalue  -> asked to write something
+
+$ read myvalue
+blah blah blah
+
+$ echo $myvalue
+blah blah blah
+
+Use -p
+
+$ read -p "type your age" age
+type your age <enter text>
+
+$ echo $age
+<entered text>
+
+$ echo "you are $age"
+
+Use -s
+
+$ read -s password
+<enter unseen password>
+$ echo $password
+
+$ read -sp "insert password: " mypass
+insert password <hi>
+
+$ echo $mypass
+hi
+
+ENVIRONMENT VARIABLES
+**************************
+
+a dynamic-named value that can affect the way running processes will behave on a computer. They are part of the environment in which a process runs.
+
+$ echo $USER
+$ echo $PATH
+$ echo $HOME
+
+
+
+
+
+
+
+Sudo
+****************************
+Lets you act as a root/super user and override permissions
+It will show up as owned by root
+
+If you don't want to use sudo. 
+
+$ sudo bash
+$ whoami : root
+
+$ exit
+
+Can also change ownership
+
+$ sudo chown <new owne> <file to change ownership>
+
+can then edit with nano/vim
+
+$ sudo chgrp <name> <file>
+
+
+Change permissions
+
+$ chmod <u: owner, g: guest, o: others>=wrx <file>
+
+$ chmod u=rw <file>
+
+This is needed for making files executable
+
+$ chmod +x <file>
+just makes file executable for everyone
+
+$ chmod -x <file>
+permission removed
+
+
+Change recursively
+
+sudo chmod -R jacob <folder>/
+$ rm -R <folder>/
+
+
+
+
+Wildcard
+****************************
+
+'.' To open/list/whatever pwd
+
+
+'*' $ file *.ext.   or <text>*
+
+Example: $ mv <folder>/*.ext .
+Moves all indicated files in '.' to folder
+
+
+
+
+Options
+**************************************
+
+ls -l -a
+------------------------
+-a invisible (.) in front
+
+ls -R .
+
+-l more details
+-l <dir>
+$ ls -r  lists in reverse order
+
+
+-R recursively
+--------------------------------
+$ cp -R <folderA>/ <folderB>.  Allows you to cp all the files in A into B
+
+$ rm -R <folder>/
+
+mv cmd doesn't need -R
+
+
+
+-rwxr-xr-x@  1 jacob  staff  1503 Aug 24  2017 LICENSE
+-rwxr-xr-x@  1 jacob  staff  3145 Aug 24  2017 README.md
+drwxr-xr-x@ 15 jacob  staff   480 Jun 10 21:20 course
+drwxr-xr-x@ 18 jacob  staff   576 Aug 24  2017 data
+
+
+Code #links owner group size date file/dir
+
+
+drwxr-xr-x@ 
+File (-) or dir (dr) --> groups of three: rwx  r-x  r-x   final char unimportant
+
+owner: rwx -> owner can read, write, execute
+Group: r-x -> group can read, ex
+Everyone else: r-x -> group can read, ex
+
+
+
+SHELL SCRIPTING
+---------------------------------------------
+
+$ ./<executable file>
+
+./ is the location, NOT a cmd; the "." is the current location
+could use the complete path with the executable and it will run
+
+
+$ which ls
+
+gives location of executable 
+
+
+
+
+
+STORAGE 
+--------------------------------------
+
+$ df
+
+$ df -h
+
+The -h flag is for ‘human readable form’ meaning return results in the familiar megabyte/gigabyte format. You should see something like this
+
+$ du
+du – displays disk usage information for each file and directory (ie: home directories, folders, etc)
+At the command prompt type:
+du -sh ~
+
+The -s flag is for a summary, and once again the -h flag is for ‘human readable form’, the ~ is your home directory. You should see something like this:
+$ du -sh ~
+26G /Users/MacUser
+
+$ du -sh *
+
+This gives a break down for the current directory
+
+devfs is a special filesystem containing a representation of physical devices. ... In effect the tools will show the file system space and inode usage as 100%.
+

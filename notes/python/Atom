@@ -1,0 +1,19 @@
+#################
+##   ATOM    ###
+################
+
+
+conda install -c anaconda atom
+
+https://hackernoon.com/setting-up-atom-as-a-python-ide-a-how-to-guide-o6dd37ff
+
+
+Preferences -> install 
+
+terminal --> '+' icon bottom left
+
+Hydrogen
+
+blocks # %%
+run cell (package dropdown)  option+cmd -> enter
+

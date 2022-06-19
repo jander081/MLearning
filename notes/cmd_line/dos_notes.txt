@@ -1,0 +1,36 @@
+############################################
+##       DOS CMD LINE   ##
+############################################
+
+$ dir
+$ type nul > new_file.py
+
+$ tasklist
+
+$ systeminfo
+
+
+# Create a file
+> fsutil file createnew test.py
+# or
+> echo type some text > test.py  # better way
+
+
+https://www.howtogeek.com/357623/microsoft-word-keyboard-shortcuts-that-make-your-life-easier/
+
+create folder: CTRL+shift+N
+
+create excel: Windows+R then type
+
+ctrl+N: new window
+
+wndw+S: search
+wndw+D: display/hide desktop
+
+# this is definitely an option
+window+W+enter
+
+# close current window
+alt + F4
+
+alt+left arrow: explorer move back

@@ -1,0 +1,223 @@
+#############################################
+######     GITHUB			#####
+#############################################
+
+https://gist.github.com/davfre/8313299
+https://gist.github.com/ccannon94/982d69b23659d66c0ca6fb1384f94c97
+
+
+> git config --global user.name "jander081"
+> git config --global user.email jacob.f.anderson@gmail.com
+# check git config user.name
+> git config user.password "J@ke5g1thub"  # Must be in the repo; should probably be --global as well
+
+
+
+# Update cloned copy
+> git pull
+
+# this is what you're looking for -- Pull the branch 
+> git reset --hard origin/current_branch
+
+BASICALLY: git reset --hard origin
+
+
+# from remote to origin
+> git add
+> git commit
+> git push -f origin
+
+
+# created branch
+> git checkout -b test
+> git add notebooks
+> git commit -m "test"
+> git push -u origin test
+
+
+
+
+File created in home/COMP167
+
+cd inside repo
+> git branch
+# if you have been using diff machines - update
+# from master
+> git checkout master | git pull
+
+# from branch
+> git checkout [branch name] | git pull
+# update branch from master:
+> git rebase master
+
+
+# To create AND checkout a new working branch, use 
+> git checkout -b [working-branch-name]
+
+
+# Save your work before switching to your terminal
+# Now, STAGE your changes using 
+> git add
+# Commit your changes using 
+> git commit -m "[your-commit-message]"
+
+'''Type a brief (55 characters or less) description of the change you made. If you cannot summarize the change in 55 characters, you probably changed to much! Remember to use the imperative voice when writing commit messages, meaning say "Make change to the code" instead of "Made changes to the code".
+Example: git commit -m "Create toString method in Student class"'''
+
+# Now that your commit is made, you should push these changes to the remote repository using 
+> git push
+
+
+The HEAD in Git is the pointer to the current branch reference, which is in turn a pointer to the last commit you made or the last commit that was checked out into your working directory. That also means it will be the parent of the next commit you do.
+
+A “detached HEAD” message in git just means that HEAD (the part of git that tracks what your current working directory should match) is pointing directly to a commit rather than a branch. ... As soon as you checkout a new branch or tag, the detached commits will be “lost” (because HEAD has moved)
+
+
+master: the name of the default branch that git creates for you when first creating a repo. In most cases, "master" means "the main branch". Most shops have everyone pushing to master, and master is considered the definitive view of the repo. But it's also common for release branches to be made off of master for releasing. Your local repo has its own master branch, that almost always follows the master of a remote repo.
+
+
+origin: the default name that git gives to your main remote repo. Your box has its own repo, and you most likely push out to some remote repo that you and all your coworkers push to. That remote repo is almost always called origin, but it doesn't have to be.
+
+
+With the "git checkout" command, you determine which revision of your project you want to work on. Git then places all of that revision's files in your working copy folder.
+
+Normally, you use a branch name to communicate with "git checkout":
+
+
+Note how the name of the commit indicates the Section and the lecture within the section.
+
+Scroll to commits - ID section of interest -- copy hash
+> git checkout 75b48f55a9b6dd94c40846f5a66c7f217a1f580b
+# head will detach; to reattach use
+> git checkout master
+# open pull requests on our forked repo (later will be using to test out circleCI setup)
+> git status
+> git remote set-url origin https://github.com/jander081/deploying-machine-learning-models.git
+# Allows you to use your forked version for pulls
+# create a branch (for pull)
+> git checkout -b test-branch-2
+# Switched to a new branch 'test-branch-2'
+# do an empty commit
+> git commit --allow-empty -m "opening pr"
+> git push origin test-branch-2 # this refers to the forked repo due to the previous "remote" cmd
+# this had some credential issues -- easily fixed
+# now pushed up to the repo
+# ensure the base repository for the branch is changed to the fork
+
+
+
+> git --version
+> git config --list
+> git add -h
+> git help <verb> config # comprehensive; q to quit
+> man git <verb>
+> man git config
+
+
+
+https://git-scm.com
+
+
+https://github.com/trainindata/deploying-machine-learning-models
+# hit commits (under green code block)
+# Fork (top right)
+# git clone into /repos/
+--- return to this
+# scroll commits - copy hash then cd into repo and 
+git checkout 75b48f55a9b6dd94c40846f5a66c7f217a1f580b
+
+Open pull requests
+-------------------
+# need to set the fork as origin for pull request
+# must be the URL from the fork! Else 403 error
+> git remote set-url origin https://github.com/jander081/deploying-machine-learning-models.git
+# create a branch
+> git checkout -b test-branch-2
+> git commit --allow-empty -m "opening pr"
+> git push origin test-branch-2
+# option to open pull request on github (compare)
+# switch base repositiory to forked repository
+# Create pull request
+
+
+
+CMDS
+######
+> git branch -a
+
+https://docs.github.com/en/github/getting-started-with-github/fork-a-repo
+
+
+Not fully understanding branches
+
+
+git checkout --force (or -f) branch-name
+
+
+git status list which (unstaged) files have changed
+git diff list (unstaged) changes to files
+git log list recent commits
+
+git add fn stage file
+git commit -m 'message' commit file
+git commit -am 'message' add/commit all changes from all tracked files (no untracked files) in one go
+
+
+
+#####################
+## GITHUB COURSE  ##
+####################
+
+core concepts
+----------------
+* 3 states
+	- Working directory: 
+	- Staging area (git index): pre-commit holding area
+	- Repository: commit
+- Remote repository
+- master branch
+
+Repository name: all lowercase, hypens instead of spaces
+
+$ git version
+$ git status # to see if there are changes between stages
+
+Untracked files -- in WD but not added
+
+$ git add <file>
+$ git status  # shows for commit
+
+$ git commit -m "message" # this updates the LOCAL (not on github) repository
+
+$ git push origin master # pushes the commit to remote; file is now on github
+
+A checksum is a value used to verify the integrity of a file or a data transfer. In other words, it is a sum that checks the validity of data.
+
+
+
+* directory containing three files
+* Staging the files computes a checksum for each one (the SHA-1 hash we mentioned in What is Git?), stores that version of the file in the Git repository (Git refers to them as blobs), and adds that checksum to the staging area:
+1. create the commit by running git commit, 
+2. Git checksums each subdirectory (in this case, just the root project directory) and stores them as a tree object in the Git repository. 
+3. Git then creates a commit object that has the metadata and a pointer to the root project tree so it can re-create that snapshot when needed.
+4. 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

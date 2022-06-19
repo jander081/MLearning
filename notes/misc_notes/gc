@@ -1,0 +1,274 @@
+##########################
+####       GC      #####
+#########################
+
+
+Troubleshoot SSH
+-----------------------
+
+jacoba_ultravioletai_com@jake-3
+
+# check folder permissions
+% ls -ld
+
+
+sudo apt-get install python3.8-venv
+python3 -m venv uvai_venv
+
+SSH
+--------------
+
+# from ssh - doesn't work
+scp -r jacoba_ultravioletai_com@deep-05:/home/boa_ultravioletai_com/data/goodfaces_ 21k /Users/jacob/Downloads
+
+% gcloud compute ssh deep-05
+
+# run from terminal (not ssh); this works
+% gcloud compute scp --recurse deep-05:/home/boa_ultravioletai_com/data/goodfaces_21k/\* /Users/jacob/Downloads/
+
+
+# EXIT
+% ~.
+
+# works sometimes
+
+% gcloud auth list
+% gcloud auth login
+
+
+jacoba_ultravioletai_com@instance
+
+# quick method
+% gcloud compute ssh jake-4
+
+# if looking for files, "cd /" first, then look
+
+
+load public key to instance
+% cat ~/.ssh/id_rsa.pub 
+
+run ssh
+% ssh -i ~/.ssh/id_rsa jacob@35.235.95.91
+
+Modify shell script and copy to google drive
+% scp -i ~/.ssh/id_rsa INSTALL_jake.sh jacob@34.94.0.70:
+
+observe that the shell script can now be accessed via ssh
+run it
+$ bash INSTALL_jake.sh 
+
+
+gcloud compute scp FILE_NAME --project TARGET_PROJECT_ID TARGET_INSTANCE_NAME:folder_name --zone region
+
+
+gcloud compute copy-files instance_name:remote_location local_dir --zone=region
+
+scp -i vox2_dev_mp4.zip INSTALL_jake.sh jacob@34.94.0.70
+
+
+gcloud compute copy-files ~/Desktop/test --zone=europe-west4-a
+
+
+gcloud compute scp big-disk-energy:/mnt/disks/disk1/dev/mp4/id05271/588BHuY9qJI/00001.mp4 ~/Users/jacob/Desktop --zone europe-west4-a
+
+
+gcloud compute scp big-disk-energy:/mnt/disks/disk1/dev/mp4/id05271/588BHuY9qJI/00001.mp4 --project ultravioletai jake-jupyter:uvai --zone europe-west4-a
+
+
+
+gcloud compute copy-files big-disk-energy:/mnt/disks/disk1/dev/mp4/id05271/588BHuY9qJI ~/Desktop --zone=europe-west4-a
+
+gcloud compute scp big-disk-energy:/mnt/disks/disk1/dev/mp4/id05271/588BHuY9qJI/00001.mp4 ~/Desktop --zone=europe-west4-a
+
+
+
+
+Pycharm
+-----------------
+
+1. preferences
+
+
+
+command+, for settings
+
+Configure ssh
+tools>>deploy>>browse -- done
+
+gcloud compute ssh [USER@]INSTANCE [--command=COMMAND] [--container=CONTAINER] [--dry-run] [--force-key-file-overwrite] [--internal-ip] [--plain] [--ssh-flag=SSH_FLAG] [--ssh-key-file=SSH_KEY_FILE] [--strict-host-key-checking=STRICT_HOST_KEY_CHECKING] [--zone=ZONE] [GCLOUD_WIDE_FLAG …] [-- SSH_ARGS …]
+
+
+Jupyter
+------------------
+
+https://benjlindsay.com/posts/running-jupyter-lab-remotely
+
+Open 2 x terminals
+
+Terminal 1: 
+
+% ssh -i ~/.ssh/id_rsa jacob@35.235.95.91
+
+$ jupyter lab --no-browser --port=5678
+
+Terminal 2:
+
+% ssh -CNL localhost:5678:localhost:5678 jacob@35.235.95.91
+
+In web browser past "localhost:5678"
+
+Enter the token as the password
+
+
+NO SPACES with "=" sign
+
+export PROJECT_ID="ultravioletai"
+export ZONE="us-west2-a"
+export INSTANCE_NAME="jake-1"
+
+gcloud compute ssh --project $PROJECT_ID --zone $ZONE $INSTANCE_NAME -- -L 8080:localhost:8080
+
+
+If port 8080 still in use:
+
+% lsof -i :<PORT>
+% kill <PID>
+
+gcloud compute ssh jake-0 --zone=us-west2-a  -- -L 5678:localhost:5678
+
+
+
+
+Upgrade Ubuntu
+-----------------
+sudo apt-get update
+sudo apt-get upgrade -y
+sudo apt-get dist-upgrade
+
+
+
+
+
+
+
+
+Other stuff
+-------------------
+
+
+sudo apt-get install git
+
+python3 -m pip install --user --upgrade pip
+
+
+gcloud compute ssh jake-1
+
+change gcloud user
+
+
+
+
+Jones location --> 
+
+
+
+
+
+
+
+
+
+
+
+
+
+CONFIG
+##########
+
+https://cloud.google.com/sdk/gcloud/reference/config/set
+
+% gcloud config list
+
+% gcloud config set <account> 
+
+% gcloud config unset <account>
+
+% gcloud auth login jacob.f.anderson@gmail.com
+
+% gcloud config set project ultravioletai
+
+
+# re-initalize and set properties if you're changing the active config
+
+% gcloud init # then follow prompts
+
+
+BUCKETS
+###########
+
+https://cloud.google.com/storage/docs/quickstart-gsutil
+
+# Create
+% gsutil mb -b on -l us-east1 gs://my-awesome-bucket/
+
+# Upload
+% gsutil cp Desktop/kitten.png gs://my-awesome-bucket
+
+
+# Download
+% gsutil cp gs://uvai_videos/20101126__fox_news__YT_p2vd4GLffj4.transcript /Users/jacob/Projects/test.transcript
+
+
+
+SERVICE ACCOUNTS
+##################
+
+https://medium.com/@kashif.sohail/read-files-from-google-cloud-storage-bucket-using-local-pyspark-and-jupyter-notebooks-f8bd43f4b42e
+
+Use this tutorial
+
+May need: 
+
+You do not have permission to set policy on the project. The permission 'resourcemanager.projects.setIamPolicy' is required to grant project-level permissions to the service account.
+
+
+
+Right click -- run/debug -- manually enter env var
+
+
+ENVIRONMENT VARIABLES
+#################
+
+# can also set the env var in kernel space json
+https://stackoverflow.com/questions/37890898/how-to-set-env-variable-in-jupyter-notebook
+
+
+# setting the ENV var for venv does not transfer to notebooks - use os package
+
+Environment variables are set for your current shell session and are used to pass information into system processes. I am over simplifying the definition here to keep it simple for this example.
+
+% printenv
+% echo $PATH
+
+
+# To set a variable from the command line use export 
+
+% export GOOGLE_APPLICATION_CREDENTIALS=/Users/jacob/Projects/uvai/uvai_repo/uvai/creds.json
+
+%env GOOGLE_APPLICATION_CREDENTIALS=/Users/jacob/Projects/uvai/uvai_repo/uvai/creds.json
+
+# to append a value to an existing environment variable, then assign the value as:
+
+% export [existing_variable_name]=[new_value]:$[existing_variable_name]
+
+% export PATH=/Users/jacob/google-cloud-sdk/bin:$PATH
+
+
+
+CLOUD FUNCTIONS
+#################
+
+# test funct -- enter JSON
+{"name":"20200910__oan__YT_I0aPfiDkxx0.transcript"}
+
+

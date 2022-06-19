@@ -1,0 +1,1026 @@
+Location of envs: (must show all hidden files)
+C:\Users\janderson124\AppData\Local\Continuum\anaconda3\envs
+
+###########
+## TOC   ##
+###########
+
+https://developer.apple.com/metal/tensorflow-plugin/
+
+1. COMMON CMD LINE	
+2. PANDAS
+	a. INDEXING
+	b. NULLS/LAMBDAS
+	c. GROUPBY
+	d. TRANSFORM
+	e. INPUTS
+	f. MISC
+		- try/except
+3. NUMPY
+	a. RANDOM
+	b. RANDOM STUFF
+	c. STACKING
+	d. NULL
+	e ARGUMENTS AND CONDITIONALS
+	f. MATMUL / LINEAR ALG
+	g. VECTORIZE
+	h. MASKING
+	i. INTERATE?
+	4. PULL FROM WEBSITE
+5. IMAGES
+6. JOIN
+7. SKLEARN
+8. SEABORN
+9. MATPLOTLIB
+10. LISTS
+11. DICT
+12. IMPORTS
+13. REGEX
+14. STRINGS
+15. DATA CLEANSING
+16. WRITING TEXT FILES
+17. GROUPBY
+18. XL WINGS
+	a. load xl files
+19. DATETIME
+20. EXECTUTABLES
+21. LIBRARIES
+22. PATHS
+23. CLS
+
+############################################
+##           	 1. COMMON CMD LINE	         ##
+############################################
+USE THE TAB KEY TO SCROLL!!!
+
+$ dir(math)
+$ help(math)
+
+$ !pip freeze | grep numpy
+# or
+$ !pip show numpy
+$ pip install -r requirements.txt
+
+rmdir, rm -R
+## See all functions of a module/library
+$ dir(library)
+
+$ import pyttsx3
+$ pyttsx3.__file__ # gives location
+
+# processing, number of threads
+$ !sysctl -n hw.ncpu
+
+# or
+$ import multiprocessing as mp
+$ print("Number of processors: ", mp.cpu_count())
+
+$ pd.read_csv('IRM Participant information.csv',encoding="ISO-8859-1")
+
+############################################
+##           	  2. PANDAS		         ##
+############################################
+
+# Can create and append to empty dataframes!
+$ df_feat = pd.DataFrame()
+
+# Jesus.. could have used this and query before
+$ df_market.assign()
+$ df_market.query()
+
+# Watch your quotations with query
+$ df.query("asset == 'AMGN'")
+
+# MISC
+------
+$ f = lambda x: 1 if x>0 else 0 if x ==0 else -1
+$ y = pd.get_dummies(y, drop_first=True)
+
+% df.rename(columns={'Input.sid': 'title'}, inplace=True)
+
+
+
+#######
+# INDEXING
+#######
+
+% df = df[df.AR >= 97]
+
+# double brackets for dframe rather than series
+$ y = df[['TRV.Win']]
+
+$ df.columns = df.iloc[15) # reset header
+$ del df.columns.name
+
+$ df.columns.get_loc('Funds')
+$ col = df.pop('Funds')
+$ df.insert(4, col.name, col)
+
+# iloc and loc
+-----------
+# seen regular indexing on series -> df['name'][0] suddenly fail. Use iloc if this happens
+% df['sample'].iloc[0]
+
+
+$ test = df_c['Policy_eff_year'].iloc[:5, ]
+$ test = df1.iloc[:100, [2, 4, 5]]
+
+$ X1 = X.iloc[:, top_indices]
+$ df_h = df.iloc[22000:, ] 
+$ df_h = df.loc['name':, ] 
+
+# numpy and pandas
+$ df.iloc[np.where(df.eff_dt > datetime(2018, 1, 1))]['eff_dt'].value_counts()
+
+$ df = df[df['New-Renew Ind'] != 'New']
+# or
+$ df = df.query(" New-Renew Ind != 'New' ")
+
+# OR
+------
+$ test1 = test[(test.eff_dt == datetime(2016, 2, 1)) | (test.eff_dt == datetime(2018, 2, 1)) ]
+
+# AND
+------
+$ df_q2 = df[(df['quarter'] == '2') & (df['year'] == '2016')]
+$ X_train = data[-((data['year'] == 2018) & (data['quarter'] == 2))]
+$ df_market.query("time.dt.year == 2010 and assetCode == 'AAPL.O'")
+
+#ISIN faster in most cases
+-----
+$ df['B'].isin(['one','three'])]
+
+# EXAMPLE
+$ data[ (data['Stu_AdmissionTermCode'] == 201705) | \
+      (data['Stu_AdmissionTermCode'] == 201708)]
+
+#Is equivalent to:
+$ data[data['Stu_AdmissionTermCode'].isin([201705, 201708])]
+
+% list(df['ID'][0])  # then if '_' in  
+['D', 'V', '_', 'b', 'o', 'a']
+
+% df[df['Courses'].str.contains("Spark")]
+
+#ANY, ALL
+----------
+$ X = data[(data[['year_2018', 'quarter_2']] != 1).any(axis=1)]
+$ y = data[(data[['year_2018', 'quarter_2']] == 1).all(axis=1)]
+
+FIND INDEX
+----------
+$ labels = df[df.assetCode == 'AAPL.O'].index.values.tolist()
+$ labels[:4]
+
+$ df_market[df_market.assetCode == 'AAPL.O'].index[0]
+$ df_market.query('index == 2609870')
+
+# seems like this is only for locating column indices
+$ df_market.columns.get_loc('assetCode')
+
+DROP/RENAME
+---------
+
+% df.drop(df[df['Age'] < 25].index, inplace = True)
+
+% df[df[Òcolumn_nameÓ].str.contains(ÒstringÓ)==False]
+
+
+
+
+########
+# MULTI INDEXING
+########
+
+https://pandas.pydata.org/pandas-docs/stable/user_guide/advanced.html
+
+https://janakiev.com/blog/pandas-multiindex-pivot/
+
+$ data_test.reset_index(inplace=True)
+$ data_test.set_index(['date', 'asset'], inplace=True)
+$ data_test.sort_index(inplace=True)
+
+$ data_test.index.summary()
+$ data_test.index.names
+$ data_test.index.levels
+
+# you can then grab a whole dframe for each idx val
+$ data_test.loc[20160901]
+
+$ def process_dframe(data):
+   # reset multi-index
+   data.reset_index(inplace=True)
+   data.columns = data.iloc[0]
+   # reset date index
+   data.set_index('Date', drop=True, inplace=True)
+   # drop extra cols and old extra row index
+   return data.iloc[1:, :][['Close']]
+
+########
+# NULLS AND DUPLICATES / LAMBDAS
+########
+
+# assign null
+% import math
+% math.nan
+
+% df.series.value_counts(dropna=False)
+
+% df = df.dropna(subset=['ID'])
+
+$ num.columns.values.tolist()
+$ test['Quintile'].isnull().value_counts()
+
+$ df[df.Last_Name.notnull()]
+
+$ df.quintile.fillna(0)
+
+# Interesting
+X_train.isnull().values.any()
+X_train.isnull().sum().sum()
+df.isnull().sum(axis=0)
+
+# I would generally just do a list comp - may need to check this first
+$ X[x for x in X.columns if X[x].isnull().sum() > 0].isnull().sum()
+
+# similiar
+$ null_columns=class_df.columns[class_df.isnull().any()]
+$ class_df[null_columns].isnull().sum()
+
+$ df = df.loc[:, df.columns.notnull()]
+
+$ np.isnan(df["Rehire Date - Current"][0])
+
+FIND NULL VALUE INDEX
+----------
+
+$ null_columns = df.columns[df.isnull().any()]
+$ print(df[df["lag_1_auto"].isnull()][null_columns])
+$ df[df['Plan Number'].isnull()]
+
+$ csv[csv.duplicated('A_EMPID')]
+
+
+
+LAMBDAS
+---------------
+
+% df['AR'] = df.LifetimeApprovalRate.apply(lambda x: int(x.split()[0].replace('%', '')))
+
+
+% df[df['ID'].map(len) >= 11]
+
+
+
+
+########
+# GROUPBY
+########
+
+https://jakevdp.github.io/PythonDataScienceHandbook/03.08-aggregation-and-grouping.html
+
+$ data.groupby(['Course_TermDate', 'Course_StuTerminationDesc'])['Course_StuTerminationDesc'].count()
+# table.unstack()
+$ df_news.groupby(['provider']).count()
+
+# TRANSFORM
+-------------
+# idx a group, then perform a lambda on that group. Good for time series
+
+$ ( X.groupby('asset')['squeeze'].
+            transform(lambda x: x.rolling(window=126, min_periods=126).
+            min().
+            shift()) )
+
+
+########
+# INPUTS
+########
+
+Use asserts and while loops to force the correct inputs
+
+$ n = 0
+$ while n not in range(1, 101):    
+    n = int(input())
+
+$ assert float(str_).is_integer(), 'must be an integer'
+
+# Good code
+while True:
+    n = raw_input("Please enter 'hello':")
+    if n.strip() == 'hello':
+        break
+
+
+
+########
+# MISC
+########
+
+$ df1 = pd.concat([num_df, y], axis = 1)
+$ cat_df.drop(['Unnamed: 0'], axis = 1, inplace = True)
+$ df.colName.value_counts(dropna=False)
+$ agents = df['agent'].unique() # .tolist() sometimes. Usually, arrays are better though
+$ agents.sort()
+
+$ df.sort_values(by='year', ascending=True)
+
+
+
+TRY/EXCEPT
+-----------
+
+
+
+
+
+############################################
+##           3. NUMPY		         ##
+############################################
+https://lectures.quantecon.org/py/orth_proj.html
+
+
+########
+# Random
+########
+
+$ np.random.rand(3,2)
+$ np.arange(10)
+
+$ vec = np.random.random_integers(1, 8, size=10)
+
+---------------------------------
+# RESHAPING
+------------
+$ X_test = np.array([3.3, 0.66]).reshape(-1, 1)
+$ X_test.flatten
+# 1d ARRAY
+$ X_test = np.array([3.3, 0.66]).reshape(-1)
+$ y_train[:,0]
+
+# reassign values to only certain indices - retain dim: a[:5] = a[:5] - a[:-5]
+# if needed though, pad
+$ np.pad(diff, (1, 0), mode='constant')
+
+
+# RANDOM STUFF
+-------------
+np.array_split(feats_merge, 6, axis=1)
+y = np.ravel(y)
+lambda x: int(np.float32(x))
+np.unique(df['New-Renew Ind'])
+np.float64()
+
+# STACKING
+--------------
+$ z = np.vstack((np.ravel(y_test), y_logloss[:, 1]))
+$ np.hstack((v, u))
+
+# NULL
+--------------
+$ print(f"{data.dtypes}\n")
+$ np.isnan()
+
+# ARGUMENTS AND CONDITIONALS
+-------------------
+# numpy and pandas
+$ df.iloc[np.where(df.eff_dt > datetime(2018, 1, 1))]['eff_dt'].value_counts()
+$ df.iloc[(np.where(df.eff_dt > datetime(2018, 1, 1))) and \
+         	(np.where(df.eff_dt < datetime(2018, 6, 1)))].head(2)
+
+$ vectfunc = np.vectorize(myfunc,cache=False)
+$ vec = list(vectfunc(df.agnt_freq,df.agnt))
+
+# MATMUL/ LINEAR ALG
+--------------------
+# FASTER METHOD
+$ X_design = np.concatenate((np.ones((X.shape[0],1)), X), axis=1)
+$ y_hat = (X @ np.linalg.inv(X.T @ X) @ X.T @ y)
+# LONGER METHOD
+$ X = np.concatenate((np.ones((X.shape[0],1)), X), axis=1)
+$ lens = np.linalg.inv(np.matmul(np.transpose(X), X))
+$ H = np.matmul(np.matmul(X, lens), np.transpose(X))
+$ y_hat2 = np.matmul(H, y)
+
+########
+# VECTORIZE
+########
+
+https://docs.scipy.org/doc/numpy-1.15.1/reference/generated/numpy.vectorize.html
+
+https://hackernoon.com/speeding-up-your-code-2-vectorizing-the-loops-with-numpy-e380e939bed3
+
+########
+# MASKING
+########
+
+padding
+https://stackoverflow.com/questions/35751306/python-how-to-pad-numpy-array-with-zeros
+
+masking
+https://docs.scipy.org/doc/numpy/reference/generated/numpy.ma.filled.html
+
+$ import numpy.ma as ma
+$ diff = ar[1:] - ar[:-1] # rather than .diff() with pandas
+# need to pad to preserve shape
+$ np.pad(diff, (1, 0), mode='constant')
+$ pos = ma.masked_where(diff < 0, diff).filled(0)
+$ neg = abs(ma.masked_where(diff > 0, diff).filled(0))
+
+
+Itertools
+*******************************
+# returns an iterator
+$ [i for i in itertools.combinations([3, 1, 5, 7, 5, 9], 2)]
+
+#########################################
+##     OTHER
+########################################
+
+PULL FROM WEBSITE
+##################
+$ import wget
+$ url = 'http://askebsa.dol.gov/FOIA%20Files/2018/Latest/F_5500_2018_Latest.zip'
+$ filename = wget.download(url)
+
+
+##############################
+5. IMAGES
+##############################
+
+# place file in same folder and code in markdown
+$ <img src="col_space.png" width="400" height="300" alt="">
+$ <img src="col_space.png">
+
+# convert jpeg to .icon
+# pip install imageio
+
+$ import imageio
+$ img = imageio.imread('logo.png')
+$ imageio.imwrite('logo.ico', img)
+
+
+#########################################
+##     JOIN
+########################################
+
+
+$ df = csv2.merge(X, left_on='Employee ID', right_on='EMPLOYEE_CODE')
+
+$ pd.merge(left, right, how='inner', on=None, left_on=None, right_on=None,
+         left_index=False, right_index=False, sort=True,
+         suffixes=('_x', '_y'), copy=True, indicator=False,
+         validate=None)
+
+$ df = pd.merge(mstr, df_right, how='outer', on='SSN')
+
+
+####################################################
+###                      SKLEARN
+#####################################################
+
+Datasets
+#------------------------
+https://scikit-learn.org/stable/datasets/index.html
+-------------------------------
+import sklearn
+from sklearn.datasets.
+from sklearn.preprocessing. 
+from sklearn.ensemble. 
+from sklearn.metrics. 
+from sklearn.model_selection. 
+from sklearn.pipeline.
+
+sklearn.metrics.SCORERS.keys()
+_______________________________
+
+
+Type
+*************
+
+.astype(float)
+pandas.to_numeric
+df.M_ind.dtype == 'int64'
+$ type(lst) == list
+
+
+Seaborn
+**************************************
+$ sns.set(rc={"figure.figsize": (12, 8)})
+# (context='notebook', style='darkgrid', palette='deep')
+
+
+
+
+Mathplotlib
+**************************************
+http://queirozf.com/entries/pandas-dataframe-plot-examples-with-matplotlib-pyplot
+--------------------------------------
+import matplotlib.dates as mdates
+from matplotlib import pyplot
+from statsmodels.graphics.tsaplots import plot_acf
+%matplotlib inline
+_______________________________________
+# STANDARD AGGREGATED PLOT
+df.plot(kind='bar',x='name',y='age')
+df.groupby('state')['name'].nunique().plot(kind='bar')
+plt.show()
+
+# SUBPLOTS ARE OFTEN PREFERRED FOR FUNCTIONALITY
+$ fig, ax = plt.subplots(figsize=(13,4))
+$ ax.plot(df)
+$ ax.xaxis.set_major_formatter(mdates.DateFormatter('%m/%y'))
+
+# USING PYPLOT
+plot_acf(df)
+pyplot.show()
+
+######################
+## LISTS
+######################
+
+# Interesting func, map. Use it to map a func to an iterable, such as a list
+
+$ map(str, lst)
+# returns a func that you can then insert into a .join()
+
+$ ' '.join(map(str, lst))
+# this can be done in other ways, but .join seems popular
+$ output = " ".join([str(x) for x in rmv])
+
+# nice for converting strings (inputs) into numeric lists
+# list(map(int, input().strip().split()))
+
+
+
+
+
+######################
+## DICT
+######################
+
+
+$ pd.DataFrame.from_dict(word_index, orient='index').head(10)
+
+# Reverse Dict
+$ {v:k for k, v in files.items()} 
+
+$ files.keys(); files.values()   
+
+
+$ dict_={}
+$ for key, value in files.items():
+     dict_[value] = dict_.get(value, []) + [key]
+
+$ dictionary = {'spain': 'madrid', 'france': 'paris'}
+$ for key, value in dictionary.items():
+    print(key, " : ", value)
+$ print('')
+
+# the .get method is tough. Not a lot of docs on it. The info that is available is misleading. If you're performing a dict reversal with multiple values (list) per key, you'll need the following:
+
+$rev[val] = rev.get(val, []) + [key] 
+
+# or to simply look up values from keys
+$ encoder.get('he')
+
+
+# one to many dict
+$ d1 = {}
+$ d1.setdefault(key, []).append(value)
+
+
+
+
+
+
+CMD LINE -> Jupyter
+*******************
+
+# Install a conda package in the current Jupyter kernel
+import sys
+!conda install --yes --prefix {sys.prefix} numpy
+
+# Install a pip package in the current Jupyter kernel
+import sys
+!{sys.executable} -m pip install numpy
+
+
+
+IMPORTS
+********
+
+--------------------------
+os.getcwd()
+os.chdir() <- works like cd, must enter as a string; 'section4'
+os.listdir()
+os.path.join('usr', 'bin', 'spam')
+os.makedirs('usr/bin/spam')
+os.path.abspath(path) 
+os.path.relpath(path, start) 
+os.path.dirname(path)
+os.path.basename(path)
+
+Issues with windows:
+
+os.environ['KMP_DUPLICATE_LIB_OK']='True'
+
+
+sys.path()
+import sys
+print(sys.path)
+sys.path.append('C:\\Users\\jander33\\Desktop\\code\\quickpipeline\\quickpipeline')
+So Python will find any packages that have been installed to those locations.
+
+os.__file__ (gives path to module) However, doesn't work for C modules
+
+import imp
+imp.find_module('util')
+  
+pd.set_option('display.max_rows', 500)
+pd.set_option('display.max_columns', 500)
+
+
+######################
+## REGEX
+######################
+
+and String functions
+*****************************************************
+https://pandas.pydata.org/pandas-docs/stable/user_guide/text.html
+-----------------------------------------------
+import re
+string. tons of options
+____________________________________________________
+p = re.compile('Region')
+names = df.columns
+[name for name in names if p.match(name)]
+
+p = re.compile("^.*Year.*$")
+result = re.sub('[^0-9]','', t)
+X = X.applymap(lambda x: re.sub(r'\W+', '', x))
+
+
+$ bool(re.search(r'\braptor\b', 'veloci raptor jesus'))
+
+MATCH
+######
+$ x = re.match('\w+\s+\w+', 'john smith adams')
+$ x.group()
+
+
+$ letters_only = re.sub("[^a-zA-Z]", " ")
+
+# [] indicates group membership and ^ means "not". In other words, the re.sub() statement above says, "Find anything that is NOT a lowercase letter (a-z) or an upper case letter (A-Z), and replace it with a space."
+
+$ (.*) = zero or more of any characters
+
+# replace { and } and ' with '' 
+lambda x: re.sub(r'[{}\']', '', x).replace(" ", "")
+
+set([asset for asset in df_market.assetCode if re.match(r'AMZ', asset)])
+
+# .strip seems easier than re.sub
+
+$ df_news.subjects.str.split(',', expand=True)
+# will expand into dataframe
+$ col_names = list(set([i.strip(' \n,') for i in lst]))
+# strip() will clear off space before and after the text
+
+# alternative to str.split, expand
+
+$ from itertools import zip_longest
+$ new_cols = pd.DataFrame(list(zip_longest(*df_news.iloc[:,8].apply(lambda x:x.split(",")), fillvalue=0))).T
+
+############
+# strings
+############
+
+$ series.str.contains('AB')
+
+## TECHNIQUE FOR EXPANDING INTO INDICATORS
+
+df_news.subjects = df_news.subjects.apply(lambda x: re.sub(r'[n{}\']', '', x)).replace(" ", "")
+
+df_sub = df_news[['subjects']]
+
+x = df_sub.subjects.str.split(r',', expand=True)
+x = x.applymap(lambda x: x.strip() if type(x) == str else x)
+x = x.stack()
+
+df_sub = pd.get_dummies(x, prefix='sub_').groupby(level=0).sum()
+
+## JOIN strings
+
+$" ".join(lst) 
+# weird, but possibly useful. The iterable is likely a list of strings. This will merge into one string.
+$",".join(lst) # inserts a comma between joined elements in the iterable
+
+
+############################
+## DATA CLEANING
+############################
+
+# Unfortunately, can only do one substring search and only works 
+# with series - not lambdas
+# this was a very simple solution that took way too long
+
+$ data[data['Plan Sponsor'].fillna('').str.contains('JPMorgan')] 
+$ data[data['Plan / Entity Name'].fillna('').str.startswith('E')]
+
+# works well
+def reName(x):
+    new = 'JPMorgan Chase Bank, N.A.'
+    if 'JPMCB' in x:
+        return new
+    elif 'JPMorgan' in x:
+        return new
+    else:
+        return x
+
+$ bool(re.search(r'\braptor\b', 'veloci raptor jesus'))    
+
+############################
+## Writing text files
+############################
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Groupby
+************ 
+
+data.groupby(['Course_TermDate', 'Course_StuTerminationDesc'])['Course_StuTerminationDesc'].count()
+
+
+XL_wings
+**************
+
+import xlwings as xw
+
+wb = xw.Book(r'ret_data_09_21.xlsx') # MUST HAVE THE r
+
+
+wb.sheets.add('df_english_2014')
+
+sht = wb.sheets['df_english_2014']
+
+sht.range('A1').value = df
+
+
+fig = plt.figure()
+chart = df_dep.pivot_table('cred_hours_course', index='division_level', columns='year', aggfunc='sum')
+plt.plot(chart)
+plt.gca().set_xticklabels(['2014', '2014','2015', '2015', '2016', '2016', '2017', '2017','2018', '2018'])
+plt.ylabel('total credits per year');
+sht1.pictures.add(fig)
+
+
+############################################
+##           	  DATE TIME		    ##
+############################################
+
+
+-----------------------------------------------
+$ import datetime as dt
+
+$ df.eff_dt.apply(lambda x: datetime.strptime(str(x), '%Y-%m-%d'))
+
+# lousy. Make sure the 'dt' is used. Can be placed infront of datetime aswell
+# finding the correct for is not found in the docs
+
+
+# importing a csv converts datetimes to strings. Prevent with the following:
+
+$ df = pd.read_csv('output/sigma_data.csv', index_col='Date', parse_dates=True, infer_datetime_format=True,)
+
+# this gives Timestamp('2006-12-26 00:00:00') Not datetime
+# take a val and perform dir(val) to see options. But this will work: 
+
+$ df.index.strftime("%Y%m%d").astype(int)
+
+
+$ dt.datetime.strptime(date_time, '%Y-%m-%d %H')
+
+$ plt.plot(coin['2019-03'])
+
+$ df['Hire Date'][0] > dt.datetime(1990, 1, 1)
+$ X[col] = X[col].apply(lambda x: x.strftime("%m/%d/%Y"))
+
+$ present = dt.datetime.now()
+
+def convert_time(time_str):
+    zeros = ''
+    mm, ss = time_str.split(':')
+    ts = int(mm) * 60 + int(ss) 
+    x = str(ts * 1000)
+    for i in range(0, 8-len(x)):
+        zeros += '0'
+    return zeros + x
+
+
+
+API code
+-------------------------------------------------
+
+X_train, X_test, y_train, y_test = train_test_split(X, y,
+                                                    test_size=0.3)
+
+
+from sklearn.metrics import accuracy_score, 
+					confusion_matrix, 
+					classification_report
+
+print(confusion_matrix(y_pred, y_test))  
+print(classification_report(y_pred, y_test))  
+
+
+############################################
+EXECUTABLES
+##########################################
+
+# see images for imageio and png -> ico conversion
+
+# Issues with pyinstaller installation. pip install may be denied and cmd line conda installs fail as well. 
+
+# You CAN install with anaconda navigator however
+
+# Do not try to import pyinstaller first, just run it from CMD line
+
+# may need $ pip install PyQt5 -- first
+
+$ pyinstaller --onefile --name myapp --icon=pwc.ico --clean hello.py
+
+
+pyinstaller --noconfirm 
+--log-level=WARN ^
+    --onefile --nowindow ^
+    --add-data="README;." ^
+    --add-data="image1.png;img" ^
+    --add-binary="libfoo.so;lib" ^
+    --hidden-import=secret1 ^
+    --hidden-import=secret2 ^
+    --icon=..\MLNMFLCN.ICO ^
+    myscript.spec
+
+
+# changed error - but exectuable still fails. error message only briefly available
+
+$ pyinstaller --log-level=DEBUG --onefile --name quizBot --hidden-import=pyttsx3.drivers.sapi5 --icon=bot.ico --clean quizBot.py
+
+# removed --clean
+
+#############################################
+Libraries
+#############################################
+---------------------------------------------------------
+
+import pandas as pd
+import numpy as np
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+from datetime import datetime
+import sys
+%matplotlib inline
+
+sys.path.append(r'C:\\Users\\jander33\\Desktop\\projects\\code\\quickpipeline')
+sys.path.append(r'C:\\Users\\jander33\\Desktop\\projects\\code\\cleaners')
+#print(sys.path)
+from quickpipeline import QuickPipeline
+from J_cleaner import *
+
+pd.set_option('display.max_rows', 500)
+pd.set_option('display.max_columns', 500)
+
+
+
+from sklearn.datasets import make_classification
+from sklearn.svm import LinearSVC
+
+from imblearn.pipeline import make_pipeline
+from imblearn.over_sampling import ADASYN
+from imblearn.over_sampling import SMOTE, BorderlineSMOTE, SVMSMOTE
+from imblearn.over_sampling import RandomOverSampler
+from imblearn.base import SamplerMixin
+from imblearn.utils import hash_X_y
+
+$ y_prob_cv = model.predict_proba(cpu)
+$ skplt.metrics.plot_lift_curve(y_cv, y_prob_cv, title= 'Lift Curve',ax=None, figsize=None, title_fontsize='large', text_fontsize='medium')
+
+Lift is a measure of the effectiveness of a predictive model calculated as the ratio between the results obtained with and without the predictive model.
+Cumulative gains and lift charts are visual aids for measuring model performance
+Both charts consist of a lift curve and a baseline
+The greater the area between the lift curve and the baseline, the better the model
+
+$ skplt.metrics.plot_precision_recall_curve(y_test, y_prob)
+
+
+
+from faker import Factory
+from faker.providers import internet
+
+fake = Factory.create()
+fake.add_provider(internet)
+
+print(fake.ipv4_private())
+
+fake.md5(raw_output=False)
+
+
+
+
+confusion_matrix(y_test, y_pred)
+Confusion matrix:
+
+
+		pred True | pred False
+		------------|---------------
+	actual True        |
+		------------|---------------
+	actual False       |
+		------------|---------------
+
+
+
+
+
+
+
+
+PYTHON PATHS
+**********************
+
+
+
+When you run a Python module with
+
+python fibo.py <arguments>
+
+the code in the module will be executed, just as if you imported it, but with the __name__ set to "__main__". That means that by adding this code at the end of your module:
+
+if __name__ == "__main__":
+    import sys
+    fib(int(sys.argv[1]))
+
+you can make the file usable as a script as well as an importable module, because the code that parses the command line only runs if the module is executed as the “main” file:
+
+$ python fibo.py 50
+
+The variable sys.path is a list of strings that determines the interpreter’s search path for modules. It is initialized to a default path taken from the environment variable PYTHONPATH, or from a built-in default if PYTHONPATH is not set. You can modify it using standard list operations:
+
+
+
+The built-in function dir() is used to find out which names a module defines. It returns a sorted list of strings:
+
+>>> import fibo, sys
+>>> dir(fibo)
+['__name__', 'fib', 'fib2']
+>>> dir(sys)  
+
+
+
+######################
+## CLS
+######################
+
+# Great example
+
+# Python program to demonstrate  
+# use of class method and static method. 
+from datetime import date 
+  
+class Person: 
+    def __init__(self, name, age): 
+        self.name = name 
+        self.age = age 
+      
+    # a class method to create a Person object by birth year. 
+    @classmethod
+    def fromBirthYear(cls, name, year): 
+        return cls(name, date.today().year - year) 
+      
+    # a static method to check if a Person is adult or not. 
+    @staticmethod
+    def isAdult(age): 
+        return age > 18
+  
+person1 = Person('mayank', 21) 
+person2 = Person.fromBirthYear('mayank', 1996) 
+  
+print person1.age 
+print person2.age 
+  
+# print the result 

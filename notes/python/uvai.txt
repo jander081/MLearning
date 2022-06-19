@@ -1,0 +1,189 @@
+#################################################
+
+Zoom Desktop client
+#################################################
+
+
+% conda config --set changeps1 False
+
+
+
+
+MAC M1
+===============================]
+
+
+#### 2nd attempt ####
+
+https://betterdatascience.com/install-tensorflow-2-7-on-macbook-pro-m1-pro/
+
+% /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+% xcode-select --install # already installed
+
+# download from 
+https://github.com/conda-forge/miniforge
+
+% chmod -x Miniforge3-MacOSX-arm64.sh
+
+% ./Miniforge3-MacOSX-arm64.sh # permission denied
+
+% ls -l /Users/jacob/Desktop/Miniforge3-MacOSX-arm64.sh 
+
+% chmod 755 Miniforge3-MacOSX-arm64.sh  # worked
+% ./Miniforge3-MacOSX-arm64.sh  # worked, can not change location though
+
+
+
+% conda create --name env_tf python=3.9
+% conda activate env_tf
+% conda install -c apple tensorflow-deps -y
+
+% python -m pip install tensorflow-macos
+% pip install tensorflow-metal
+
+# test: import... => tf.__version__
+
+
+% pip install pyvirtualcam # on mac M1, not in env
+% pip install opencv-python
+% pip install Pillow
+
+
+
+
+% pip uninstall pyaudio
+
+
+# Try homebrew
+
+% brew install boost 
+% brew install boost-python
+% brew install portaudio
+% brew link portaudio
+
+# install pyaudio
+% python -m pip install --global-option='build_ext' --global-option='-I/opt/homebrew/Cellar/portaudio/19.7.0/include' --global-option='-L/opt/homebrew/Cellar/portaudio/19.7.0/lib' pyaudio
+
+
+# Soundfile fails
+
+% pip install soundfile
+% pip install librosa
+
+% pip uninstall soundfile
+% conda install -c anaconda numpy
+% conda install -c anaconda cffi
+
+% pip install soundfile # fails
+% conda install -c conda-forge pysoundfile # works
+
+% conda install -c conda-forge pynput # DNE
+
+% pip install pynput
+
+% pip install pyvirtualcam # DNE version
+
+# github
+% git clone https://github.com/letmaik/pyvirtualcam --recursive
+
+
+
+
+
+
+
+
+### 1st attempt ####
+
+https://developer.apple.com/metal/tensorflow-plugin/
+
+# conda env  -- name == (base) ??wtf??
+% /Users/jacob/miniforge3
+
+% pip install mediapipe-silicon # on mac M1, not in env
+
+
+% conda install -c apple tensorflow-deps 
+
+import tensorflow as tf
+print(tf.__version__)
+
+
+% python -m pip install tensorflow-macos
+
+% python -m pip install tensorflow-metal
+
+% pip install pyvirtualcam # on mac M1, not in env
+% pip install opencv-python
+% pip install Pillow
+
+
+
+# error importing _portaudio
+% brew install portaudio # updates it
+% pip install pyaudio # failed
+
+% pip uninstall pyaudio
+
+
+
+
+MAC - INTEL/AMD
+===============================]
+
+
+% python3 -m venv ~/tensorflow-metal
+% source ~/tensorflow-metal/bin/activate
+% python -m pip install -U pip
+
+% SYSTEM_VERSION_COMPAT=0 pip install tensorflow-macos tensorflow-metal
+
+% SYSTEM_VERSION_COMPAT=0 python -m pip install tensorflow-macos
+
+% SYSTEM_VERSION_COMPAT=0 python3 -m pip install tensorflow
+
+
+
+% pip install opencv-python
+% pip install pyaudio
+% pip install SoundFile
+% pip install Pillow
+% pip install pynput
+
+
+
+Given that you are seeing missing symbols like _TF_AssignUpdateVariable, it means that you have a mismatch between tensorflow and the metal plugin. You need to make sure to install tensorflow-macos using: python -m pip install tensorflow-macos
+
+
+
+
+###### Using Homebrew #########
+
+# https://erraticgenerator.com/blog/tensorflow-metal-intel-mac-gpu/
+
+
+% brew update # there was a lot
+
+% brew list --formula | grep python # currently using python==3.9; need 3.8
+
+% brew unlink python@3.9
+% brew unlink python@3.8 # faild
+% brew link --force python@3.8  # failed
+
+
+% brew unlink python
+% brew install python@3.8
+% echo 'export PATH="/usr/local/opt/python@3.8/bin:$PATH"' >> ~/.zshrc
+% export PKG_CONFIG_PATH="/usr/local/opt/python@3.8/lib/pkgconfig"
+
+% brew link --force python@3.8
+
+% NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/uninstall.sh)"
+
+
+FAILED - FACTORY RESET
+
+
+
+
+
