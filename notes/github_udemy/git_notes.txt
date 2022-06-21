@@ -1,5 +1,4 @@
-GitKraken token: eJwtzLFuwyAUheF3YfZABKYum4e2alW1HbqjC1ynyNigi504ifLuRZG3oyN9/42Bc1jKbxpxZpp53rXArVLoW1DSCRDycEAreSdhUNJb1Q0DF6xhmdIpeKSd3vaSWfbU8S+Z8XRtr/OLEv335yt/nuApLv17LzisP/Qhvt5o22rqQcxyyVidRSCk+haXHgf4Kcw6rzYGZ0a8NITgdaJjHTk1a0HSOEGIzTnROMR0rhi3HAiLgYXpeY3xfv8HZRZQHQ==
-
+GitKraken token: see local
 
 #############################################
 ######     GITHUB - course	       #####
@@ -7,6 +6,8 @@ GitKraken token: eJwtzLFuwyAUheF3YfZABKYum4e2alW1HbqjC1ynyNigi504ifLuRZG3oyN9/42
 
 % git log
 % git status
+% git init # new repository
+
 
 
 # ask

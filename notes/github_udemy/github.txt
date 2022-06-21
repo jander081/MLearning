@@ -1,9 +1,7 @@
 https://gist.github.com/davfre/8313299
 https://gist.github.com/ccannon94/982d69b23659d66c0ca6fb1384f94c97
 
-
-uvai PAT: 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
-jake PAT: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 (key chain access not updated)
+see local for tokens
 
 #############################################
 ######     GITHUB			#####
