@@ -1,0 +1,24 @@
+GitKraken token: eJwtzLFuwyAUheF3YfZABKYum4e2alW1HbqjC1ynyNigi504ifLuRZG3oyN9/42Bc1jKbxpxZpp53rXArVLoW1DSCRDycEAreSdhUNJb1Q0DF6xhmdIpeKSd3vaSWfbU8S+Z8XRtr/OLEv335yt/nuApLv17LzisP/Qhvt5o22rqQcxyyVidRSCk+haXHgf4Kcw6rzYGZ0a8NITgdaJjHTk1a0HSOEGIzTnROMR0rhi3HAiLgYXpeY3xfv8HZRZQHQ==
+
+
+#############################################
+######     GITHUB - course	       #####
+#############################################
+
+% git log
+% git status
+
+
+# ask
+% git config user.name
+# set
+% git config --global user.name "jander081"
+
+# same for email
+
+% git config user.email 
+% git config --global user.email jacob.f.anderson@gmail.com
+
+
+% git config user.password 
+% git config github.token
