@@ -15,6 +15,20 @@ uvai PAT: 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
 jake PAT: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
 
 
+# check
+% cd ~/.gitconfig
+% <repo> ls -a => .git/ nano config
+
+
+https://github.com/jander081/MLearning.git
+
+# worked
+
+git push https://jander081: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@github.com/jander081/MLearning.git
+
+
+
+
 
 git config --list
 
