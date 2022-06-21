@@ -2,6 +2,20 @@
 ######     GITHUB			#####
 #############################################
 
+
+# search keychain access on mac
+# search github.com
+# edit pswrd
+
+uvai PAT: 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
+
+jake PAT:ghp_j8ez5x1mi00Q JJy6M4gri7LobuGJf22HSlCv
+
+
+repo: https://github.com/jander081/MLearning.git
+
+
+
 https://gist.github.com/davfre/8313299
 https://gist.github.com/ccannon94/982d69b23659d66c0ca6fb1384f94c97
 
