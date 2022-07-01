@@ -1,0 +1,322 @@
+
+https://medium.com/code-factory-berlin/github-repository-structure-best-practices-248e6effc405
+
+Working (1.0) vs Master (1) w/features
+
+GitKraken token: see local
+git docs: https://git-scm.com/doc (not user friendly)
+
+#############################################
+######     GITHUB - course	       #####
+#############################################
+
+VS code exit :q
+
+
+###### BASIC COMMANDS ##############
+
+% git log  # "q" to escape (--oneline)
+% git status
+% git init # new repository (not in github)
+% ls - a # .git
+# put repos within folders - avoid nested repos
+
+
+# ask
+% git config user.name
+# set
+% git config --global user.name "jander081"
+
+# same for email
+
+% git config user.email 
+% git config --global user.email jacob.f.anderson@gmail.com
+
+
+% git config user.password 
+% git config github.token
+
+
+##### COMMITS  ###########
+
+# do stuff - make commit - do stuff - etc
+# group commits together -> 2 commands allows grouping and labeling (-m)
+# git add: stage for commit
+% git add . # all modified
+
+1. Working Directory ==> folder - making changes while you work - git notices
+2. staging area ==> .git  -> use git add to stage 
+3. repository: commit with messages
+
+# working tree clean --> everything is up-to-date
+
+% git log # log of commits 
+
+
+### Quick way
+
+% git commit -a -m "adds and commits everything in 1 cmd"
+
+
+########## ADVANCED COMMITS  ##############
+
+
+# Git Docs for options on every git command (i.e. -m , -t, etc) see above link
+
+### Atomic commits: (base unit, irreduceable) commits should be focused on a single thing (not one file)
+
+If you need to undo something, you don't need to undo everything
+
+# git docs recommend present tense (imperative) 
+"make ghjhg do ghjgf"
+Like orders basically
+# reason: git does this present tense
+
+#### Long Commit messages ####
+
+# change to VS studio
+
+% git config --global core.editor "code --wait"
+Switch VS code --> shell in path
+
+If need longer message, use "git commit" only
+First line should be summary and separated by one empty line
+
+% git log --oneline
+
+
+### Amend commit  ####
+only if you fucked up on commit ago
+
+% git commit -m "rando"
+# crap, forgot to add sample.py
+% git commit --amend
+# opens up in VS editor the commit message -- edit message if needed
+
+
+#### .gitignore  #####
+
+.gitignore: things tied to credit card; do not want included in push
+
+        - DS store files; don't want
+        - log files, API keys, dependencies&packages, certainfolder/, 
+
+* place in root. Git looks for file and ignores what we specify
+    *.log (see example doc in github folder)
+
+* npm init:  <initializer> can be used to set up a new or existing npm package
+
+
+* gitignore.io: recommends starting for certain projects
+
+
+
+############### BRANCHES ########################
+
+ Alterative timeline - until you merge 
+
+
+* every commit has a hash
+* each commit references at least one parent (commit)
+ * linear history
+
+Large projects - work in multiple contexts: work in parallel
+
+### Master Branch ###
+
+* often treated as official branch; does have to. Can be renamed
+
+commit hash 
+###  (HEAD -> Master) ###
+
+Points to our current location - active. 
+
+Branches are like bookmarks: people left off at three different points
+Only one bookmark can be viewed at a time - HEAD
+
+(HEAD -> branch pointer)  Branch pointer = where that branch is
+
+% git branch # lists current Branches
+% git branch <branch-name> # no spaces; does not set HEAD to new branch
+
+% git switch <branch-name>
+
+###  the HEAD you're on impacts the branch
+
+
+% git checkout <branch-name>; still used but git switch is generally better
+
+% git switch branch == git checkout branch
+
+# git checkout does a bunch of other stuff to be discussed later.
+
+### delete branch ###
+
+# not on branch, run 
+% git branch -d <branch to delete>
+
+### create & switch to new branch ###
+
+% git switch -c <new branch name> # creates and switches to it. 
+% git checkout -b <new-branch-name. # same but not recommended
+
+
+# switching brances w/o commiting work; work will be lost
+
+# sometimes unstaged changes will follow you when you switch branches. 
+
+### Delete branch
+
+% git switch -c deleteMe
+
+% git branch -d deleteMe # cannot delete if I'm on it.
+
+# are you sure?
+
+% git branch -D deleteMe   # -D is == --force (or -f)
+
+### Rename branch (-m for rename)
+
+# move to branch to rename
+% git branch -m <new-branch-name>
+
+############ MERGING #################
+
+
+- No one works on master; everyone works on feature branches
+- We merge branches, not specific commits
+- We always merge to the current HEAD branch
+
+
+### Simple (FF) merge ### (fast forward merge)
+
+# move to recieving branch
+% git switch master
+% git merge bugfix
+
+
+
+### Recursive merge - see pic ###
+
+master          O       add 3
+                O       add file
+Abba              O     add name1
+                  O     add name2
+                O     add songs
+                O       add file
+
+
+% git merge Abba # opens editior - automatically made merge commit 
+# with suggested message. Edit message (if needed) and close VS message to perform commit
+
+
+
+################  MERGE CONFLICTS  #######################
+
+# same file modified by two different branches
+
+
+# Git tells us there are conficts. THe files need to be fixed. Git provides markers
+# to show conflict that needs to be fixed
+
+
+# Needs to be manually corrected
+
+# files are decorated IOT help
+
+
+
+<<<<<<<<<<<< HEAD
+I like xyz
+==========
+I like abc
+<<<<<<<<<<<< Conflicting branch
+
+
+-- See example
+
+## Problem
+# 2 new branches: john and Mike
+# both update same file differently 
+# causes conflict when attempting to merge
+
+-- Solution: create 3rd branch "combo"
+# branched from mike, so has mikes stuff
+% git merge john
+
+## conflict  -- shows markers
+
+In VS Code
+<<<<<<<<<<<< HEAD  (not shown but == combo)
+Mike's songs
+
+- freedom
+- megadeath
+==========
+John's stuff
+
+Enter sandman
+<<<<<<<<<<<< john
+
+# we want them both, so 
+1. delete all markers shown in VS
+2. edit as needed
+
+---------------
+Mike's songs
+
+- freedom
+- megadeath
+
+John's songs
+
+- Enter sandman
+- mamma mia
+------------------
+
+# observe with git status
+# then add/commit to combo
+      
+
+######## GITHUB ##############
+
+# OPTION 1
+# existing local repos
+# create repo on github -- empty
+# add as remote
+
+
+# OPTION 2
+# from scratch - usual method
+# create repo on github
+# clone to local
+
+# go to clone, type "git remote (-v)"
+# gives "origin"
+# clonning sets up remote automatically
+
+% git remote origin (name for URL; origin used generally) URL
+# can rename/delete remotes if needed - not common
+% git remote rename <old> <new>
+% git remote remove <name>
+% git push <remote> <branch>
+% git push (-u) origin master (or main - as per 2020)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
